@@ -1,0 +1,400 @@
+{
+  "library_id": "florida-west-coast-homeowners-v1",
+  "version": "1.0.0",
+  "generated_for": "Florida west coast homeowners gap analysis demos and regression testing",
+  "notes": [
+    "All scenarios are synthetic and intentionally free of real policyholder data.",
+    "The cases are designed to resemble plausible residential policy structures in counties between Hernando and Collier.",
+    "These scenarios are intended for demos, rule development, regression tests, and extraction-evaluation workflows."
+  ],
+  "cases": [
+    {
+      "id": "naples-coastal-ho3-gap",
+      "title": "Naples seasonal coastal HO-3 with flood and ordinance gaps",
+      "county": "Collier",
+      "city": "Naples",
+      "corridor": "Gulf coast",
+      "risk_posture": "High coastal wind and flood exposure",
+      "property_profile": {
+        "address_line_1": "1512 Gulf Shore Boulevard N",
+        "city": "Naples",
+        "state": "FL",
+        "zip_code": "34102",
+        "county": "Collier",
+        "property_type": "single_family",
+        "occupancy_type": "seasonal",
+        "year_built": 1998,
+        "construction": "Masonry",
+        "distance_to_coast_miles": 0.5,
+        "estimated_replacement_cost": 1850000,
+        "flood_zone_indicator": "Coastal flood sensitivity likely",
+        "mortgage": true
+      },
+      "declarations": {
+        "carrier_name": "Gulf Harbor Indemnity Insurance Company",
+        "naic_like_code": "FGH-41291",
+        "policy_number": "GHI-HO3-CL-774152",
+        "policy_form": "HO-3 Special Form",
+        "effective_period": "2026-06-01 to 2027-06-01",
+        "annual_premium": 19480,
+        "hurricane_portion_of_premium": 8240,
+        "coverage_a_dwelling": 1850000,
+        "coverage_b_other_structures": 92500,
+        "coverage_c_personal_property": 1110000,
+        "coverage_d_loss_of_use": 370000,
+        "coverage_e_personal_liability": 500000,
+        "coverage_f_medical_payments": 5000,
+        "ordinance_or_law_percent": 10,
+        "all_other_perils_deductible": 5000,
+        "hurricane_deductible_percent": 5,
+        "sinkhole_status": "Not Included",
+        "optional_coverages": [
+          "Limited water backup - $10,000",
+          "Scheduled jewelry - $25,000"
+        ],
+        "endorsements": [
+          "Special Provisions - Florida",
+          "Screen enclosure limitation",
+          "Roof surfacing settlement clarification"
+        ]
+      },
+      "policy_notes": [
+        "Flood insurance not scheduled in the uploaded package.",
+        "No separate wind-only policy listed.",
+        "Ordinance or law shown at 10% of Coverage A.",
+        "Replacement cost indicated for dwelling, subject to Florida special provisions."
+      ],
+      "analysis_snapshot": {
+        "hasHomeownersPolicy": true,
+        "hasFloodPolicy": false,
+        "hasSeparateWindPolicy": false,
+        "coversWindstorm": true,
+        "excludesWindstorm": false,
+        "excludesFlood": true,
+        "hasOrdinanceOrLawCoverage": true,
+        "ordinanceOrLawLimitPercent": 10,
+        "includesReplacementCost": true,
+        "actualCashValueApplies": false,
+        "includesSinkholeCoverage": false,
+        "includesCatastrophicGroundCoverCollapseOnly": true,
+        "allOtherPerilDeductiblePercent": 2,
+        "hurricaneDeductiblePercent": 5
+      },
+      "expected_findings": [
+        "Flood coverage appears to be missing",
+        "Ordinance-or-law coverage appears missing or weak",
+        "Sinkhole protection appears narrower than a homeowner may expect",
+        "Deductible pressure may create a practical coverage gap"
+      ]
+    },
+    {
+      "id": "sarasota-barrier-island-layered-protection",
+      "title": "Sarasota barrier-island residence with flood and wind layering",
+      "county": "Sarasota",
+      "city": "Sarasota",
+      "corridor": "Barrier-island coastal",
+      "risk_posture": "High coastal exposure with layered insurance purchases",
+      "property_profile": {
+        "address_line_1": "420 Harbor Cay Drive",
+        "city": "Sarasota",
+        "state": "FL",
+        "zip_code": "34242",
+        "county": "Sarasota",
+        "property_type": "single_family",
+        "occupancy_type": "owner_occupied",
+        "year_built": 2007,
+        "construction": "Masonry with hip roof",
+        "distance_to_coast_miles": 0.3,
+        "estimated_replacement_cost": 1325000,
+        "flood_zone_indicator": "Coastal flood sensitivity likely",
+        "mortgage": false
+      },
+      "declarations": {
+        "carrier_name": "Suncoast Residential Assurance",
+        "naic_like_code": "SRA-51744",
+        "policy_number": "SRA-HO3-SR-219804",
+        "policy_form": "HO-3 Special Form",
+        "effective_period": "2026-07-15 to 2027-07-15",
+        "annual_premium": 16740,
+        "hurricane_portion_of_premium": 6410,
+        "coverage_a_dwelling": 1325000,
+        "coverage_b_other_structures": 66250,
+        "coverage_c_personal_property": 662500,
+        "coverage_d_loss_of_use": 265000,
+        "coverage_e_personal_liability": 500000,
+        "coverage_f_medical_payments": 5000,
+        "ordinance_or_law_percent": 25,
+        "all_other_perils_deductible": 2500,
+        "hurricane_deductible_percent": 2,
+        "sinkhole_status": "Not Included",
+        "optional_coverages": [
+          "Separate NFIP flood policy referenced",
+          "Separate wind coverage package referenced",
+          "Water backup - $15,000"
+        ],
+        "endorsements": [
+          "Special Provisions - Florida",
+          "Secondary residence endorsement removed",
+          "Limited fungi coverage"
+        ]
+      },
+      "policy_notes": [
+        "Flood coverage is referenced in the package as a separate policy.",
+        "Windstorm is carved out to a separate wind carrier but the combined package addresses the peril.",
+        "Ordinance or law appears at 25% of Coverage A."
+      ],
+      "analysis_snapshot": {
+        "hasHomeownersPolicy": true,
+        "hasFloodPolicy": true,
+        "hasSeparateWindPolicy": true,
+        "coversWindstorm": true,
+        "excludesWindstorm": false,
+        "excludesFlood": false,
+        "hasOrdinanceOrLawCoverage": true,
+        "ordinanceOrLawLimitPercent": 25,
+        "includesReplacementCost": true,
+        "actualCashValueApplies": false,
+        "includesSinkholeCoverage": false,
+        "includesCatastrophicGroundCoverCollapseOnly": true,
+        "allOtherPerilDeductiblePercent": 1,
+        "hurricaneDeductiblePercent": 2
+      },
+      "expected_findings": [
+        "Sinkhole protection appears narrower than a homeowner may expect"
+      ]
+    },
+    {
+      "id": "tampa-bay-inland-acv-stress",
+      "title": "Tampa Bay inland homeowner with ACV pressure and no flood companion policy",
+      "county": "Hillsborough",
+      "city": "Tampa",
+      "corridor": "Urban inland west coast",
+      "risk_posture": "Moderate surge distance but meaningful rainfall and wind exposure",
+      "property_profile": {
+        "address_line_1": "9814 Laurel Creek Court",
+        "city": "Tampa",
+        "state": "FL",
+        "zip_code": "33647",
+        "county": "Hillsborough",
+        "property_type": "single_family",
+        "occupancy_type": "owner_occupied",
+        "year_built": 1989,
+        "construction": "Frame",
+        "distance_to_coast_miles": 16.0,
+        "estimated_replacement_cost": 415000,
+        "flood_zone_indicator": "Rainfall and drainage risk present",
+        "mortgage": true
+      },
+      "declarations": {
+        "carrier_name": "Bay Shield Home Insurance Company",
+        "naic_like_code": "BSH-22176",
+        "policy_number": "BSH-HO8-TB-603912",
+        "policy_form": "Modified Homeowners HO-8",
+        "effective_period": "2026-08-01 to 2027-08-01",
+        "annual_premium": 6845,
+        "hurricane_portion_of_premium": 2380,
+        "coverage_a_dwelling": 415000,
+        "coverage_b_other_structures": 20750,
+        "coverage_c_personal_property": 207500,
+        "coverage_d_loss_of_use": 41500,
+        "coverage_e_personal_liability": 300000,
+        "coverage_f_medical_payments": 2000,
+        "ordinance_or_law_percent": 10,
+        "all_other_perils_deductible": 2500,
+        "hurricane_deductible_percent": 2,
+        "sinkhole_status": "Not Included",
+        "optional_coverages": [
+          "Limited water damage - $10,000",
+          "Screen enclosure limitation"
+        ],
+        "endorsements": [
+          "Loss settlement endorsement - actual cash value",
+          "Special provisions - Florida",
+          "Roof surface settlement limitation"
+        ]
+      },
+      "policy_notes": [
+        "No separate flood policy is listed.",
+        "Loss settlement wording is materially more restrictive than a standard replacement-cost dwelling form.",
+        "Ordinance or law is present but low."
+      ],
+      "analysis_snapshot": {
+        "hasHomeownersPolicy": true,
+        "hasFloodPolicy": false,
+        "hasSeparateWindPolicy": false,
+        "coversWindstorm": true,
+        "excludesWindstorm": false,
+        "excludesFlood": true,
+        "hasOrdinanceOrLawCoverage": true,
+        "ordinanceOrLawLimitPercent": 10,
+        "includesReplacementCost": false,
+        "actualCashValueApplies": true,
+        "includesSinkholeCoverage": false,
+        "includesCatastrophicGroundCoverCollapseOnly": true,
+        "allOtherPerilDeductiblePercent": 1,
+        "hurricaneDeductiblePercent": 2
+      },
+      "expected_findings": [
+        "Flood coverage appears to be missing",
+        "Ordinance-or-law coverage appears missing or weak",
+        "Sinkhole protection appears narrower than a homeowner may expect",
+        "Loss settlement may be actual cash value instead of replacement cost"
+      ]
+    },
+    {
+      "id": "fort-myers-vacancy-wind-gap",
+      "title": "Fort Myers vacant coastal property with wind carve-out and high retention",
+      "county": "Lee",
+      "city": "Fort Myers Beach",
+      "corridor": "Coastal barrier exposure",
+      "risk_posture": "High storm vulnerability with occupancy-related underwriting stress",
+      "property_profile": {
+        "address_line_1": "75 Seabreeze Passage",
+        "city": "Fort Myers Beach",
+        "state": "FL",
+        "zip_code": "33931",
+        "county": "Lee",
+        "property_type": "single_family",
+        "occupancy_type": "vacant",
+        "year_built": 1978,
+        "construction": "Frame elevated structure",
+        "distance_to_coast_miles": 0.2,
+        "estimated_replacement_cost": 925000,
+        "flood_zone_indicator": "Coastal flood sensitivity likely",
+        "mortgage": false
+      },
+      "declarations": {
+        "carrier_name": "Peninsula Property Underwriters",
+        "naic_like_code": "PPU-88210",
+        "policy_number": "PPU-DP3-LC-110542",
+        "policy_form": "Dwelling Property Special Form DP-3",
+        "effective_period": "2026-05-15 to 2027-05-15",
+        "annual_premium": 22120,
+        "hurricane_portion_of_premium": 10450,
+        "coverage_a_dwelling": 925000,
+        "coverage_b_other_structures": 46250,
+        "coverage_c_personal_property": 92500,
+        "coverage_d_loss_of_use": 0,
+        "coverage_e_personal_liability": 0,
+        "coverage_f_medical_payments": 0,
+        "ordinance_or_law_percent": 10,
+        "all_other_perils_deductible": 15000,
+        "hurricane_deductible_percent": 5,
+        "sinkhole_status": "Not Included",
+        "optional_coverages": [
+          "Vacancy permit endorsement",
+          "Actual cash value roof loss settlement"
+        ],
+        "endorsements": [
+          "Windstorm or hail exclusion",
+          "Special provisions - Florida",
+          "Vacancy limitation endorsement"
+        ]
+      },
+      "policy_notes": [
+        "No companion wind policy is included in the package.",
+        "No flood policy is listed.",
+        "Vacancy and ACV treatment materially weaken practical claim recovery."
+      ],
+      "analysis_snapshot": {
+        "hasHomeownersPolicy": true,
+        "hasFloodPolicy": false,
+        "hasSeparateWindPolicy": false,
+        "coversWindstorm": false,
+        "excludesWindstorm": true,
+        "excludesFlood": true,
+        "hasOrdinanceOrLawCoverage": true,
+        "ordinanceOrLawLimitPercent": 10,
+        "includesReplacementCost": false,
+        "actualCashValueApplies": true,
+        "includesSinkholeCoverage": false,
+        "includesCatastrophicGroundCoverCollapseOnly": true,
+        "allOtherPerilDeductiblePercent": 3,
+        "hurricaneDeductiblePercent": 5
+      },
+      "expected_findings": [
+        "Flood coverage appears to be missing",
+        "Windstorm treatment appears incomplete or excluded",
+        "Ordinance-or-law coverage appears missing or weak",
+        "Sinkhole protection appears narrower than a homeowner may expect",
+        "Loss settlement may be actual cash value instead of replacement cost",
+        "Deductible pressure may create a practical coverage gap"
+      ]
+    },
+    {
+      "id": "hernando-sinkhole-elected",
+      "title": "Hernando County homeowner with elected sinkhole coverage and stronger structure",
+      "county": "Hernando",
+      "city": "Spring Hill",
+      "corridor": "North of Tampa inland west corridor",
+      "risk_posture": "Elevated sinkhole sensitivity with lower coastal surge exposure",
+      "property_profile": {
+        "address_line_1": "328 Blue Heron Ridge",
+        "city": "Spring Hill",
+        "state": "FL",
+        "zip_code": "34609",
+        "county": "Hernando",
+        "property_type": "single_family",
+        "occupancy_type": "owner_occupied",
+        "year_built": 2005,
+        "construction": "Masonry",
+        "distance_to_coast_miles": 12.5,
+        "estimated_replacement_cost": 510000,
+        "flood_zone_indicator": "Localized flood exposure possible but not primary concern",
+        "mortgage": true
+      },
+      "declarations": {
+        "carrier_name": "Westshore Mutual Home Insurance",
+        "naic_like_code": "WMH-31970",
+        "policy_number": "WMH-HO3-HN-482915",
+        "policy_form": "HO-3 Special Form",
+        "effective_period": "2026-09-01 to 2027-09-01",
+        "annual_premium": 7425,
+        "hurricane_portion_of_premium": 2015,
+        "coverage_a_dwelling": 510000,
+        "coverage_b_other_structures": 25500,
+        "coverage_c_personal_property": 255000,
+        "coverage_d_loss_of_use": 102000,
+        "coverage_e_personal_liability": 300000,
+        "coverage_f_medical_payments": 2000,
+        "ordinance_or_law_percent": 25,
+        "all_other_perils_deductible": 2500,
+        "hurricane_deductible_percent": 2,
+        "sinkhole_status": "Included",
+        "optional_coverages": [
+          "Sinkhole loss coverage elected",
+          "Limited water backup - $5,000"
+        ],
+        "endorsements": [
+          "Special provisions - Florida",
+          "Sinkhole loss endorsement",
+          "Loss assessment extension"
+        ]
+      },
+      "policy_notes": [
+        "Flood policy is not listed in the package.",
+        "Sinkhole coverage is affirmatively elected and should avoid the narrower CGCC-only finding.",
+        "Replacement cost and ordinance or law appear stronger than the weaker scenarios."
+      ],
+      "analysis_snapshot": {
+        "hasHomeownersPolicy": true,
+        "hasFloodPolicy": false,
+        "hasSeparateWindPolicy": false,
+        "coversWindstorm": true,
+        "excludesWindstorm": false,
+        "excludesFlood": true,
+        "hasOrdinanceOrLawCoverage": true,
+        "ordinanceOrLawLimitPercent": 25,
+        "includesReplacementCost": true,
+        "actualCashValueApplies": false,
+        "includesSinkholeCoverage": true,
+        "includesCatastrophicGroundCoverCollapseOnly": false,
+        "allOtherPerilDeductiblePercent": 1,
+        "hurricaneDeductiblePercent": 2
+      },
+      "expected_findings": [
+        "Flood coverage appears to be missing"
+      ]
+    }
+  ]
+}

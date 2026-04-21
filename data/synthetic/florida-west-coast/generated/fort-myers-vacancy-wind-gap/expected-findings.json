@@ -1,0 +1,12 @@
+{
+  "scenario_id": "fort-myers-vacancy-wind-gap",
+  "title": "Fort Myers vacant coastal property with wind carve-out and high retention",
+  "expected_findings": [
+    "Flood coverage appears to be missing",
+    "Windstorm treatment appears incomplete or excluded",
+    "Ordinance-or-law coverage appears missing or weak",
+    "Sinkhole protection appears narrower than a homeowner may expect",
+    "Loss settlement may be actual cash value instead of replacement cost",
+    "Deductible pressure may create a practical coverage gap"
+  ]
+}

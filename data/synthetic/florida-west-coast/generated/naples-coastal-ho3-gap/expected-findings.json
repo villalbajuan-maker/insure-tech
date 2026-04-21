@@ -1,0 +1,10 @@
+{
+  "scenario_id": "naples-coastal-ho3-gap",
+  "title": "Naples seasonal coastal HO-3 with flood and ordinance gaps",
+  "expected_findings": [
+    "Flood coverage appears to be missing",
+    "Ordinance-or-law coverage appears missing or weak",
+    "Sinkhole protection appears narrower than a homeowner may expect",
+    "Deductible pressure may create a practical coverage gap"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "scenario_id": "hernando-sinkhole-elected",
+  "title": "Hernando County homeowner with elected sinkhole coverage and stronger structure",
+  "expected_findings": [
+    "Flood coverage appears to be missing"
+  ]
+}

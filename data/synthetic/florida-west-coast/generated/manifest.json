@@ -1,0 +1,47 @@
+{
+  "library_id": "florida-west-coast-homeowners-v1",
+  "version": "1.0.0",
+  "scenario_count": 5,
+  "generated_paths": [
+    {
+      "scenario_id": "naples-coastal-ho3-gap",
+      "declarations_page": "data/synthetic/florida-west-coast/generated/naples-coastal-ho3-gap/declarations-page.md",
+      "policy_packet": "data/synthetic/florida-west-coast/generated/naples-coastal-ho3-gap/policy-packet.md",
+      "expected_findings": "data/synthetic/florida-west-coast/generated/naples-coastal-ho3-gap/expected-findings.json",
+      "declarations_page_pdf": "data/synthetic/florida-west-coast/generated/naples-coastal-ho3-gap/declarations-page.pdf",
+      "policy_packet_pdf": "data/synthetic/florida-west-coast/generated/naples-coastal-ho3-gap/policy-packet.pdf"
+    },
+    {
+      "scenario_id": "sarasota-barrier-island-layered-protection",
+      "declarations_page": "data/synthetic/florida-west-coast/generated/sarasota-barrier-island-layered-protection/declarations-page.md",
+      "policy_packet": "data/synthetic/florida-west-coast/generated/sarasota-barrier-island-layered-protection/policy-packet.md",
+      "expected_findings": "data/synthetic/florida-west-coast/generated/sarasota-barrier-island-layered-protection/expected-findings.json",
+      "declarations_page_pdf": "data/synthetic/florida-west-coast/generated/sarasota-barrier-island-layered-protection/declarations-page.pdf",
+      "policy_packet_pdf": "data/synthetic/florida-west-coast/generated/sarasota-barrier-island-layered-protection/policy-packet.pdf"
+    },
+    {
+      "scenario_id": "tampa-bay-inland-acv-stress",
+      "declarations_page": "data/synthetic/florida-west-coast/generated/tampa-bay-inland-acv-stress/declarations-page.md",
+      "policy_packet": "data/synthetic/florida-west-coast/generated/tampa-bay-inland-acv-stress/policy-packet.md",
+      "expected_findings": "data/synthetic/florida-west-coast/generated/tampa-bay-inland-acv-stress/expected-findings.json",
+      "declarations_page_pdf": "data/synthetic/florida-west-coast/generated/tampa-bay-inland-acv-stress/declarations-page.pdf",
+      "policy_packet_pdf": "data/synthetic/florida-west-coast/generated/tampa-bay-inland-acv-stress/policy-packet.pdf"
+    },
+    {
+      "scenario_id": "fort-myers-vacancy-wind-gap",
+      "declarations_page": "data/synthetic/florida-west-coast/generated/fort-myers-vacancy-wind-gap/declarations-page.md",
+      "policy_packet": "data/synthetic/florida-west-coast/generated/fort-myers-vacancy-wind-gap/policy-packet.md",
+      "expected_findings": "data/synthetic/florida-west-coast/generated/fort-myers-vacancy-wind-gap/expected-findings.json",
+      "declarations_page_pdf": "data/synthetic/florida-west-coast/generated/fort-myers-vacancy-wind-gap/declarations-page.pdf",
+      "policy_packet_pdf": "data/synthetic/florida-west-coast/generated/fort-myers-vacancy-wind-gap/policy-packet.pdf"
+    },
+    {
+      "scenario_id": "hernando-sinkhole-elected",
+      "declarations_page": "data/synthetic/florida-west-coast/generated/hernando-sinkhole-elected/declarations-page.md",
+      "policy_packet": "data/synthetic/florida-west-coast/generated/hernando-sinkhole-elected/policy-packet.md",
+      "expected_findings": "data/synthetic/florida-west-coast/generated/hernando-sinkhole-elected/expected-findings.json",
+      "declarations_page_pdf": "data/synthetic/florida-west-coast/generated/hernando-sinkhole-elected/declarations-page.pdf",
+      "policy_packet_pdf": "data/synthetic/florida-west-coast/generated/hernando-sinkhole-elected/policy-packet.pdf"
+    }
+  ]
+}

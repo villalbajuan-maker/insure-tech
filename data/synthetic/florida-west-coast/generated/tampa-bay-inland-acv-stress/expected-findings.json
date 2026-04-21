@@ -1,0 +1,10 @@
+{
+  "scenario_id": "tampa-bay-inland-acv-stress",
+  "title": "Tampa Bay inland homeowner with ACV pressure and no flood companion policy",
+  "expected_findings": [
+    "Flood coverage appears to be missing",
+    "Ordinance-or-law coverage appears missing or weak",
+    "Sinkhole protection appears narrower than a homeowner may expect",
+    "Loss settlement may be actual cash value instead of replacement cost"
+  ]
+}
