@@ -44,11 +44,11 @@ export function resolveState(params: {
     : "starter";
 
   if (requestedState === "property_gate") {
-    return storedState === "starter" ? "starter" : "property_gate";
+    return "property_gate";
   }
 
   if (requestedState === "comprehensive") {
-    if (params.hasPropertyDetails && params.comprehensiveUnlocked && getStateIndex(storedState) >= getStateIndex("comprehensive")) {
+    if (params.hasPropertyDetails && params.comprehensiveUnlocked) {
       return "comprehensive";
     }
 
@@ -56,7 +56,7 @@ export function resolveState(params: {
   }
 
   if (requestedState === "execution") {
-    if (params.hasPropertyDetails && params.comprehensiveUnlocked && storedState === "execution") {
+    if (params.hasPropertyDetails && params.comprehensiveUnlocked && getStateIndex(storedState) >= getStateIndex("comprehensive")) {
       return "execution";
     }
 

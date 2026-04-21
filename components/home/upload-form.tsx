@@ -2,9 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import type { AnalysisRequest } from "@/src/domain/florida-homeowners.types";
+import { saveCachedAnalysis } from "@/src/lib/analysis/analysis-client-store";
 
 interface CreateAnalysisResponse {
   analysisId: string;
+  request: AnalysisRequest;
 }
 
 export function UploadForm() {
@@ -37,6 +40,7 @@ export function UploadForm() {
       }
 
       const data = (await response.json()) as CreateAnalysisResponse;
+      saveCachedAnalysis(data.request);
       router.push(`/analysis/${data.analysisId}?state=starter`);
     });
   }

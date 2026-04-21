@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import type { AnalysisRequest } from "@/src/domain/florida-homeowners.types";
 import type {
   ComprehensiveAnalysisView,
   ExecutionAnalysisView,
@@ -12,12 +13,21 @@ import type {
   RoofType,
   StarterAnalysisView
 } from "@/src/domain/florida-homeowners.types";
+import { loadCachedAnalysis, saveCachedAnalysis } from "@/src/lib/analysis/analysis-client-store";
 import { type AnalysisSessionState, getBaseExposure } from "@/src/lib/analysis/analysis-experience";
 import {
   getFlowCookieName,
   getNextFlowState,
+  parseRequestedState,
+  resolveState,
   type AnalysisFlowState
 } from "@/src/lib/analysis/analysis-flow";
+import {
+  buildComprehensiveView,
+  buildExecutionView,
+  buildPropertyGateView,
+  buildStarterView
+} from "@/src/lib/analysis/analysis-view-builders";
 import { ComprehensiveStateView } from "@/components/analysis/states/full-state-view";
 import {
   type PropertyGateFormState,
@@ -31,16 +41,26 @@ interface AnalysisExperienceProps {
     | StarterAnalysisView
     | PropertyGateView
     | ComprehensiveAnalysisView
-    | ExecutionAnalysisView;
+    | ExecutionAnalysisView
+    | null;
   analysisId: string;
   initialState: AnalysisFlowState;
+  initialRequest: AnalysisRequest | null;
 }
 
 const sessionKeyPrefix = "analysis-session";
 
 function buildDefaultSessionState(
-  analysis: StarterAnalysisView | PropertyGateView | ComprehensiveAnalysisView | ExecutionAnalysisView
+  analysis: StarterAnalysisView | PropertyGateView | ComprehensiveAnalysisView | ExecutionAnalysisView | null,
+  analysisId: string
 ): AnalysisSessionState {
+  if (!analysis) {
+    return {
+      propertyGateStarted: false,
+      baseExposure: 0
+    };
+  }
+
   if (analysis.kind === "starter") {
     return {
       propertyGateStarted: false,
@@ -66,10 +86,10 @@ function buildDefaultSessionState(
   };
 }
 
-function buildInitialFormState(view: PropertyGateView): PropertyGateFormState {
-  const details = view.propertyDetails ?? {};
+function buildInitialFormState(view: PropertyGateView | null): PropertyGateFormState {
+  const details = view?.propertyDetails ?? {};
   return {
-    address: details.address ?? view.prefilledAddress ?? "",
+    address: details.address ?? view?.prefilledAddress ?? "",
     propertyType: details.propertyType ?? "single_family",
     occupancyType: details.occupancyType ?? "owner_occupied",
     yearBuilt: details.yearBuilt ? String(details.yearBuilt) : "",
@@ -91,39 +111,63 @@ function buildInitialFormState(view: PropertyGateView): PropertyGateFormState {
 export function AnalysisExperience({
   analysis,
   analysisId,
-  initialState
+  initialState,
+  initialRequest
 }: AnalysisExperienceProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const cookieName = getFlowCookieName(analysisId);
   const sessionKey = `${sessionKeyPrefix}:${analysisId}`;
+  const [requestState, setRequestState] = useState<AnalysisRequest | null>(
+    initialRequest ?? null
+  );
   const [sessionState, setSessionState] = useState<AnalysisSessionState>(() =>
-    buildDefaultSessionState(analysis)
+    buildDefaultSessionState(analysis, analysisId)
   );
   const [propertyGateForm, setPropertyGateForm] = useState<PropertyGateFormState>(() =>
-    analysis.kind === "property_gate"
-      ? buildInitialFormState(analysis)
-      : {
-          address: "",
-          propertyType: "single_family",
-          occupancyType: "owner_occupied",
-          yearBuilt: "",
-          squareFootage: "",
-          stories: "",
-          estimatedHomeValue: "",
-          estimatedReplacementValue: "",
-          roofAge: "",
-          roofType: "shingle",
-          priorMajorClaim: "no",
-          knownFloodConcern: "not_sure"
-        }
+    buildInitialFormState(analysis?.kind === "property_gate" ? analysis : null)
   );
   const [isSubmitting, startTransition] = useTransition();
 
   useEffect(() => {
+    const restored = initialRequest ?? loadCachedAnalysis(analysisId);
+    if (restored) {
+      setRequestState(restored);
+      saveCachedAnalysis(restored);
+    }
+  }, [analysisId, initialRequest]);
+
+  const effectiveState = useMemo(() => {
+    const requestedState = parseRequestedState(searchParams.get("state") ?? initialState);
+    return resolveState({
+      requestedState,
+      storedState: requestedState,
+      hasPropertyDetails: Boolean(requestState?.propertyDetails),
+      comprehensiveUnlocked: requestState?.comprehensivePaymentStatus === "unlocked"
+    });
+  }, [initialState, requestState?.comprehensivePaymentStatus, requestState?.propertyDetails, searchParams]);
+
+  const activeAnalysis = useMemo(() => {
+    if (!requestState) {
+      return analysis;
+    }
+
+    switch (effectiveState) {
+      case "property_gate":
+        return buildPropertyGateView(requestState);
+      case "comprehensive":
+        return buildComprehensiveView(requestState);
+      case "execution":
+        return buildExecutionView(requestState);
+      default:
+        return buildStarterView(requestState);
+    }
+  }, [analysis, effectiveState, requestState]);
+
+  useEffect(() => {
+    const defaultState = buildDefaultSessionState(activeAnalysis, analysisId);
     const stored = sessionStorage.getItem(sessionKey);
-    const defaultState = buildDefaultSessionState(analysis);
     if (!stored) {
       setSessionState(defaultState);
       return;
@@ -139,13 +183,13 @@ export function AnalysisExperience({
     } catch {
       setSessionState(defaultState);
     }
-  }, [analysis, sessionKey]);
+  }, [activeAnalysis, analysisId, sessionKey]);
 
   useEffect(() => {
-    if (analysis.kind === "property_gate") {
-      setPropertyGateForm(buildInitialFormState(analysis));
+    if (activeAnalysis?.kind === "property_gate") {
+      setPropertyGateForm(buildInitialFormState(activeAnalysis));
     }
-  }, [analysis]);
+  }, [activeAnalysis]);
 
   useEffect(() => {
     sessionStorage.setItem(sessionKey, JSON.stringify(sessionState));
@@ -183,56 +227,66 @@ export function AnalysisExperience({
     event.preventDefault();
 
     startTransition(async () => {
-      const response = await fetch(`/api/analyses/${analysisId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          action: "unlock_comprehensive",
-          propertyDetails: {
-            address: propertyGateForm.address,
-            propertyType: propertyGateForm.propertyType as PropertyType,
-            occupancyType: propertyGateForm.occupancyType as OccupancyType,
-            yearBuilt: parseOptionalNumber(propertyGateForm.yearBuilt),
-            squareFootage: parseOptionalNumber(propertyGateForm.squareFootage),
-            stories: parseOptionalNumber(propertyGateForm.stories),
-            estimatedHomeValue: parseOptionalNumber(propertyGateForm.estimatedHomeValue),
-            estimatedReplacementValue: parseOptionalNumber(
-              propertyGateForm.estimatedReplacementValue
-            ),
-            roofAge: parseOptionalNumber(propertyGateForm.roofAge),
-            roofType: propertyGateForm.roofType as RoofType,
-            priorMajorClaim: propertyGateForm.priorMajorClaim,
-            knownFloodConcern: propertyGateForm.knownFloodConcern
-          }
-        })
-      });
-
-      if (!response.ok) {
+      if (!requestState) {
         return;
       }
 
+      const updatedRequest: AnalysisRequest = {
+        ...requestState,
+        propertyDetails: {
+          address: propertyGateForm.address,
+          propertyType: propertyGateForm.propertyType as PropertyType,
+          occupancyType: propertyGateForm.occupancyType as OccupancyType,
+          yearBuilt: parseOptionalNumber(propertyGateForm.yearBuilt),
+          squareFootage: parseOptionalNumber(propertyGateForm.squareFootage),
+          stories: parseOptionalNumber(propertyGateForm.stories),
+          estimatedHomeValue: parseOptionalNumber(propertyGateForm.estimatedHomeValue),
+          estimatedReplacementValue: parseOptionalNumber(
+            propertyGateForm.estimatedReplacementValue
+          ),
+          roofAge: parseOptionalNumber(propertyGateForm.roofAge),
+          roofType: propertyGateForm.roofType as RoofType,
+          priorMajorClaim: propertyGateForm.priorMajorClaim,
+          knownFloodConcern: propertyGateForm.knownFloodConcern
+        },
+        comprehensivePaymentStatus: "unlocked",
+        comprehensiveUnlockedAt: new Date().toISOString()
+      };
+
+      setRequestState(updatedRequest);
+      saveCachedAnalysis(updatedRequest);
       persistReachedState("comprehensive");
       router.push(`${pathname}?state=comprehensive` as Route);
     });
   }
 
   function advanceState() {
-    const nextState = getNextFlowState(initialState);
+    const nextState = getNextFlowState(effectiveState);
     if (nextState) {
       goToState(nextState);
     }
   }
 
-  if (initialState === "starter") {
-    if (analysis.kind !== "starter") {
+  if (!activeAnalysis) {
+    return (
+      <section className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
+        <h1 className="text-3xl font-semibold">Analysis not available</h1>
+        <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
+          This prototype could not restore the analysis in the current browser session.
+          Please upload the policy package again to restart the flow.
+        </p>
+      </section>
+    );
+  }
+
+  if (effectiveState === "starter") {
+    if (activeAnalysis.kind !== "starter") {
       return null;
     }
 
     return (
       <StarterStateView
-        analysis={analysis}
+        analysis={activeAnalysis}
         exposure={sessionState.baseExposure}
         onContinue={() => {
           setSessionState((current) => ({
@@ -245,14 +299,14 @@ export function AnalysisExperience({
     );
   }
 
-  if (initialState === "property_gate") {
-    if (analysis.kind !== "property_gate") {
+  if (effectiveState === "property_gate") {
+    if (activeAnalysis.kind !== "property_gate") {
       return null;
     }
 
     return (
       <PropertyGateStateView
-        analysis={analysis}
+        analysis={activeAnalysis}
         formState={propertyGateForm}
         onChange={handlePropertyFieldChange}
         onSubmit={handlePropertyGateSubmit}
@@ -261,17 +315,17 @@ export function AnalysisExperience({
     );
   }
 
-  if (initialState === "comprehensive") {
-    if (analysis.kind !== "comprehensive") {
+  if (effectiveState === "comprehensive") {
+    if (activeAnalysis.kind !== "comprehensive") {
       return null;
     }
 
-    return <ComprehensiveStateView analysis={analysis} onContinue={advanceState} />;
+    return <ComprehensiveStateView analysis={activeAnalysis} onContinue={advanceState} />;
   }
 
-  if (analysis.kind !== "execution") {
+  if (activeAnalysis.kind !== "execution") {
     return null;
   }
 
-  return <ExecutionStateView analysis={analysis} />;
+  return <ExecutionStateView analysis={activeAnalysis} />;
 }

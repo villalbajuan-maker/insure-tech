@@ -51,9 +51,17 @@ export async function POST(request: Request) {
     files
   });
 
-  await processAnalysisRequest(analysis.id);
+  const processed = await processAnalysisRequest(analysis.id);
+
+  if (!processed) {
+    return NextResponse.json(
+      { error: "The analysis could not be completed for the uploaded PDFs." },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({
-    analysisId: analysis.id
+    analysisId: analysis.id,
+    request: processed
   });
 }
