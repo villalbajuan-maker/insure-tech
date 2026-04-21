@@ -3,14 +3,18 @@ import os from "node:os";
 import path from "node:path";
 import type {
   AnalysisRequest,
-  CompletedAnalysisView,
+  FullAnalysisView,
   IntakeFormData,
+  SnapshotAnalysisView,
   UploadedDocument
 } from "@/src/domain/florida-homeowners.types";
 import {
-  buildSummaryCards,
   evaluateFloridaHomeownersGapAnalysis
 } from "@/src/lib/analysis/florida-rules-engine";
+import {
+  buildFullView,
+  buildSnapshotView
+} from "@/src/lib/analysis/analysis-view-builders";
 import { normalizeFloridaPolicySnapshot } from "@/src/lib/analysis/pdf-policy-normalizer";
 import { extractPdfText } from "@/src/lib/extraction/pdf-text-extractor";
 import { slugify } from "@/src/lib/utils";
@@ -165,14 +169,16 @@ export async function processAnalysisRequest(id: string): Promise<AnalysisReques
   return request;
 }
 
-export function getCompletedAnalysisView(id: string): CompletedAnalysisView | null {
+export function getSnapshotAnalysisView(id: string): SnapshotAnalysisView | null {
   const request = analysisStore.get(id);
-  if (!request || !request.report) {
-    return null;
-  }
+  if (!request) return null;
 
-  return {
-    request,
-    summaryCards: buildSummaryCards(request.report)
-  };
+  return buildSnapshotView(request);
+}
+
+export function getFullAnalysisView(id: string): FullAnalysisView | null {
+  const request = analysisStore.get(id);
+  if (!request) return null;
+
+  return buildFullView(request);
 }

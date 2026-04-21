@@ -1,11 +1,11 @@
 import type {
+  FullAnalysisView,
+  SnapshotAnalysisView
+} from "@/src/domain/florida-homeowners.types";
+import type {
   GapFinding,
   ScenarioExposureEstimate
 } from "@/src/domain/policy-gap-analysis.types";
-import type { CompletedAnalysisView } from "@/src/domain/florida-homeowners.types";
-
-export type AnalysisViewMode = "snapshot" | "refine" | "full";
-export type AnalysisRefineStage = "entry" | "recalc";
 
 export interface AnalysisSessionState {
   address: string | null;
@@ -51,25 +51,44 @@ export function computeLocationFactor(address: string): number {
   return 0.95;
 }
 
-export function getBaseExposure(analysis: CompletedAnalysisView): number {
+export function getBaseExposure(
+  analysis: SnapshotAnalysisView | FullAnalysisView
+): number {
+  if (analysis.kind === "snapshot") {
+    return analysis.totalExposureEstimate?.amount ?? 0;
+  }
+
   return analysis.request.report?.totalExposureEstimate?.amount ?? 0;
 }
 
 export function getHighestImpactScenario(
-  analysis: CompletedAnalysisView
+  analysis: SnapshotAnalysisView | FullAnalysisView
 ): ScenarioExposureEstimate | null {
+  if (analysis.kind === "snapshot") {
+    const scenario = analysis.highestImpactScenario;
+    if (!scenario) {
+      return null;
+    }
+
+    return {
+      id: scenario.id,
+      label: scenario.label,
+      basis: scenario.basis,
+      estimatedImpact: scenario.estimatedImpact
+    };
+  }
+
   const scenarios = analysis.request.report?.scenarioExposures ?? [];
   if (!scenarios.length) {
     return null;
   }
-
   return [...scenarios].sort(
     (a, b) => b.estimatedImpact.amount - a.estimatedImpact.amount
   )[0];
 }
 
 export function getTopScenarios(
-  analysis: CompletedAnalysisView,
+  analysis: FullAnalysisView,
   limit: number
 ): ScenarioExposureEstimate[] {
   return [...(analysis.request.report?.scenarioExposures ?? [])]
@@ -78,9 +97,23 @@ export function getTopScenarios(
 }
 
 export function getTopFindings(
-  analysis: CompletedAnalysisView,
+  analysis: SnapshotAnalysisView | FullAnalysisView,
   limit: number
 ): GapFinding[] {
+  if (analysis.kind === "snapshot") {
+    return analysis.topFindings.map((finding) => ({
+      id: finding.id,
+      findingType: "wording_ambiguity",
+      severity: finding.severity,
+      title: finding.title,
+      description: finding.description,
+      exposureIds: [],
+      policyIds: [],
+      evidence: [],
+      confidence: 1
+    }));
+  }
+
   return [...(analysis.request.report?.findings ?? [])]
     .sort((a, b) => {
       const severityDelta = severityRank[b.severity] - severityRank[a.severity];

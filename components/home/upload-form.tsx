@@ -2,16 +2,16 @@
 
 import { useRef, useState, useTransition } from "react";
 import { ReportView } from "@/components/report/report-view";
-import type { CompletedAnalysisView } from "@/src/domain/florida-homeowners.types";
+import type { FullAnalysisView } from "@/src/domain/florida-homeowners.types";
 
 interface CreateAnalysisResponse {
   analysisId: string;
-  analysis: CompletedAnalysisView;
+  analysis: FullAnalysisView;
 }
 
 export function UploadForm() {
   const [error, setError] = useState<string | null>(null);
-  const [analysis, setAnalysis] = useState<CompletedAnalysisView | null>(null);
+  const [analysis, setAnalysis] = useState<FullAnalysisView | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isPending, startTransition] = useTransition();
   const reportRef = useRef<HTMLDivElement | null>(null);

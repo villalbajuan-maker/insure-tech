@@ -4,6 +4,7 @@ import type {
   GapFinding,
   MoneyAmount,
   Recommendation,
+  ScenarioExposureEstimate,
   SourceReference
 } from "@/src/domain/policy-gap-analysis.types";
 
@@ -163,7 +164,35 @@ export interface ReportSummaryCard {
   tone: "neutral" | "warning" | "danger" | "positive";
 }
 
-export interface CompletedAnalysisView {
+export interface SnapshotFindingView {
+  id: string;
+  severity: GapFinding["severity"];
+  title: string;
+  description: string;
+}
+
+export interface SnapshotScenarioView {
+  id: string;
+  label: string;
+  basis: string;
+  estimatedImpact: MoneyAmount;
+}
+
+export interface SnapshotAnalysisView {
+  kind: "snapshot";
+  analysisId: string;
+  status: AnalysisStatus;
+  totalExposureEstimate?: MoneyAmount;
+  highestImpactScenario: SnapshotScenarioView | null;
+  topFindings: SnapshotFindingView[];
+  derivedAddress: string | null;
+  incompleteNotice: string;
+}
+
+export interface FullAnalysisView {
+  kind: "full";
   request: AnalysisRequest;
   summaryCards: ReportSummaryCard[];
 }
+
+export type CompletedAnalysisView = FullAnalysisView;

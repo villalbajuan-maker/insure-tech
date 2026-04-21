@@ -1,13 +1,16 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { AnalysisExperience } from "@/components/analysis/analysis-experience";
-import type {
-  AnalysisRefineStage,
-  AnalysisViewMode
-} from "@/src/lib/analysis/analysis-experience";
+import type { AnalysisFlowState } from "@/src/lib/analysis/analysis-flow";
 import {
+  getFlowCookieName,
+  resolveState
+} from "@/src/lib/analysis/analysis-flow";
+import {
+  getFullAnalysisView,
   getAnalysisRequest,
-  getCompletedAnalysisView,
+  getSnapshotAnalysisView,
   processAnalysisRequest
 } from "@/src/lib/repository/analysis-store";
 
@@ -15,21 +18,8 @@ interface AnalysisPageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{
     refresh?: string;
-    view?: string;
-    stage?: string;
+    state?: string;
   }>;
-}
-
-function coerceView(value?: string): AnalysisViewMode {
-  if (value === "refine" || value === "full") {
-    return value;
-  }
-
-  return "snapshot";
-}
-
-function coerceStage(value?: string): AnalysisRefineStage {
-  return value === "recalc" ? "recalc" : "entry";
 }
 
 export default async function AnalysisPage({
@@ -48,7 +38,16 @@ export default async function AnalysisPage({
     await processAnalysisRequest(id);
   }
 
-  const view = getCompletedAnalysisView(id);
+  const cookieStore = await cookies();
+  const resolvedState: AnalysisFlowState = resolveState({
+    requestedState: query.state,
+    storedState: cookieStore.get(getFlowCookieName(id))?.value ?? null
+  });
+
+  const view =
+    resolvedState === "full" || resolvedState === "execution"
+      ? getFullAnalysisView(id)
+      : getSnapshotAnalysisView(id);
   const request = getAnalysisRequest(id);
 
   if (!request) {
@@ -70,8 +69,7 @@ export default async function AnalysisPage({
         <AnalysisExperience
           analysis={view}
           analysisId={id}
-          initialView={coerceView(query.view)}
-          initialStage={coerceStage(query.stage)}
+          initialState={resolvedState}
         />
       ) : (
         <section className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">

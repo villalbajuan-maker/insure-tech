@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import type {
-  CompletedAnalysisView,
+  FullAnalysisView,
   IntakeFormData
 } from "@/src/domain/florida-homeowners.types";
 import {
   createAnalysisRequest,
-  getCompletedAnalysisView,
+  getFullAnalysisView,
   processAnalysisRequest
 } from "@/src/lib/repository/analysis-store";
 
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   });
 
   await processAnalysisRequest(analysis.id);
-  const view = getCompletedAnalysisView(analysis.id) as CompletedAnalysisView | null;
+  const view = getFullAnalysisView(analysis.id) as FullAnalysisView | null;
 
   if (!view) {
     return NextResponse.json(
