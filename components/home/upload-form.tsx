@@ -50,23 +50,32 @@ export function UploadForm() {
 
   return (
     <div className="space-y-8">
-      <section className="print-hide grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+      <section
+        id="upload-audit"
+        className="print-hide grid gap-6 scroll-mt-8 lg:grid-cols-[1.2fr_0.8fr]"
+      >
         <form
           action={handleSubmit}
           className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card"
         >
           <div className="mb-8">
-            <div className="inline-flex rounded-full bg-tide/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-tide">
-              Florida residential prototype
+            <div className="inline-flex rounded-full bg-coral/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-coral">
+              Upload policy for audit
             </div>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight">
-              Upload the policy package and run the gap analysis
+              Start the storm protection policy review
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-              This flow is intentionally minimal. Upload the declarations page, the
-              main policy wording, endorsements, or any companion PDF packet and the
-              prototype will extract coverage signals and produce the report below.
+              Upload the declarations page, policy packet, and any endorsements you
+              have. The prototype will analyze the uploaded PDFs and return a report
+              centered on uncovered risk, underinsured exposure, and recommended action
+              steps.
             </p>
+            <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-600">
+              <span className="rounded-full bg-mist px-3 py-1">Low-friction first step</span>
+              <span className="rounded-full bg-mist px-3 py-1">Designed for Florida homes</span>
+              <span className="rounded-full bg-mist px-3 py-1">Built to support inspection follow-up</span>
+            </div>
           </div>
 
           <div className="rounded-[1.75rem] border border-dashed border-slate-300 bg-mist/70 p-6">
@@ -110,41 +119,50 @@ export function UploadForm() {
               disabled={isPending}
               className="inline-flex rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isPending ? "Analyzing uploaded PDFs..." : "Run gap analysis"}
+              {isPending ? "Analyzing uploaded PDFs..." : "Run policy audit"}
             </button>
             <p className="text-sm text-slate-500">
-              No payment, no account creation, no intake fields.
+              Prototype mode: no checkout or account creation in this version.
             </p>
           </div>
         </form>
 
         <aside className="rounded-[2rem] border border-white/70 bg-[#102033] p-8 text-white shadow-card">
-          <h3 className="text-xl font-semibold">What your reviewer will see</h3>
+          <h3 className="text-xl font-semibold">Why homeowners say yes to this offer</h3>
           <div className="mt-5 space-y-4 text-sm leading-7 text-slate-200">
             <div className="rounded-3xl bg-white/10 p-5">
               <div className="text-xs uppercase tracking-[0.18em] text-coral">
-                Step 1
+                Hidden gaps
               </div>
               <p className="mt-2">
-                Upload one PDF or a full package with declarations, policy wording, and endorsements.
+                Missing flood, wind, or endorsement support that leaves the homeowner exposed.
               </p>
             </div>
             <div className="rounded-3xl bg-white/10 p-5">
               <div className="text-xs uppercase tracking-[0.18em] text-coral">
-                Step 2
+                Claim pain
               </div>
               <p className="mt-2">
-                The parser extracts coverage clues for flood, wind, ordinance-or-law, sinkhole, valuation, and deductibles.
+                Wording or deductible structures that can still produce painful out-of-pocket loss after a claim.
               </p>
             </div>
             <div className="rounded-3xl bg-white/10 p-5">
               <div className="text-xs uppercase tracking-[0.18em] text-coral">
-                Step 3
+                Action steps
               </div>
               <p className="mt-2">
-                The rules engine returns findings, evidence notes, recommendations, and methodology on the same screen.
+                Recommendations that can naturally lead into a follow-up inspection conversation.
               </p>
             </div>
+          </div>
+          <div className="mt-6 rounded-3xl bg-coral/10 p-5">
+            <div className="text-xs uppercase tracking-[0.18em] text-coral">
+              James-style positioning
+            </div>
+            <p className="mt-3 text-sm leading-7 text-slate-100">
+              This is not sold as a policy-reading exercise. It is sold as a way to
+              uncover what could go wrong before the next storm and before the next claim.
+            </p>
           </div>
         </aside>
       </section>

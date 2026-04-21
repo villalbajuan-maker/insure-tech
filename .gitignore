@@ -4,6 +4,7 @@ dist/
 build/
 .next/
 .next-stale-*/
+.next-pre-restart-*/
 .env
 .env.*
 coverage/
