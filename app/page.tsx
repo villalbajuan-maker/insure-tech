@@ -7,7 +7,7 @@ export default function HomePage() {
       <Hero />
       <UploadForm />
 
-      <section className="grid gap-6 lg:grid-cols-3">
+      <section className="print-hide grid gap-6 lg:grid-cols-3">
         <article className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-card">
           <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
             Prototype posture

@@ -1,6 +1,6 @@
 export function Hero() {
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 p-8 shadow-card backdrop-blur md:p-12">
+    <section className="print-hide overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 p-8 shadow-card backdrop-blur md:p-12">
       <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
         <div className="max-w-4xl">
           <p className="mb-4 inline-flex rounded-full bg-coral/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-coral">

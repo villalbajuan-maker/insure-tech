@@ -1,5 +1,6 @@
 import type { CompletedAnalysisView } from "@/src/domain/florida-homeowners.types";
 import { titleCase } from "@/src/lib/utils";
+import { ExportReportButton } from "@/components/report/export-report-button";
 
 function toneStyles(tone: CompletedAnalysisView["summaryCards"][number]["tone"]) {
   switch (tone) {
@@ -24,7 +25,7 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="report-print-root space-y-8">
       <section className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
@@ -49,6 +50,13 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
               {titleCase(request.status)}
             </div>
           </div>
+        </div>
+
+        <div className="report-toolbar mt-6 flex flex-wrap items-center gap-3 border-t border-slate-200 pt-6">
+          <ExportReportButton />
+          <p className="text-sm text-slate-500">
+            Opens the browser print dialog so you can save this result as a PDF.
+          </p>
         </div>
       </section>
 

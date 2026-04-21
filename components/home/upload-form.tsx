@@ -50,7 +50,7 @@ export function UploadForm() {
 
   return (
     <div className="space-y-8">
-      <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+      <section className="print-hide grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <form
           action={handleSubmit}
           className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card"
@@ -151,7 +151,7 @@ export function UploadForm() {
 
       {analysis ? (
         <div ref={reportRef} className="space-y-4">
-          <div className="flex items-center justify-between rounded-[2rem] border border-white/70 bg-white/90 px-6 py-4 shadow-card">
+          <div className="print-hide flex items-center justify-between rounded-[2rem] border border-white/70 bg-white/90 px-6 py-4 shadow-card">
             <div>
               <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
                 Analysis complete

@@ -22,3 +22,38 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+@media print {
+  @page {
+    margin: 0.6in;
+    size: auto;
+  }
+
+  html {
+    background: #ffffff;
+  }
+
+  body {
+    background: #ffffff;
+    color: #102033;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .report-toolbar {
+    display: none !important;
+  }
+
+  .report-print-root {
+    margin: 0 !important;
+  }
+
+  .report-print-root section,
+  .report-print-root article,
+  .report-print-root div[class*="rounded"] {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+}
