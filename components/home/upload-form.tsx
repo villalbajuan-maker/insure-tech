@@ -57,10 +57,10 @@ export function UploadForm() {
               Final step
             </p>
             <h2 className="mt-3 text-4xl font-semibold tracking-tight">
-              Descubre tu exposición antes de que lo haga una tormenta.
+              Discover your exposure before a storm does.
             </h2>
             <p className="mt-4 text-sm leading-7 text-slate-200">
-              Ver mi reporte ahora
+              View my report now
             </p>
           </div>
 
@@ -107,7 +107,7 @@ export function UploadForm() {
                 disabled={isPending}
                 className="inline-flex rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isPending ? "Generating report..." : "Ver mi reporte ahora"}
+                {isPending ? "Generating report..." : "View my report now"}
               </button>
               <p className="text-sm text-slate-500">
                 Prototype mode: no checkout yet.

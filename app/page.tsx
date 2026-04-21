@@ -8,33 +8,33 @@ export default function HomePage() {
 
       <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
         <p className="text-xs uppercase tracking-[0.18em] text-coral">
-          Realidad incómoda
+          Uncomfortable reality
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">
-            La mayoría de propietarios está subasegurado
+            Most homeowners are underinsured
           </div>
           <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">
-            Muchas reclamaciones se niegan por “daños preexistentes”
+            Many claims are denied because of “pre-existing damage”
           </div>
           <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">
-            El techo es la causa #1 de disputas
+            Roof damage is the #1 source of disputes
           </div>
           <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">
-            El seguro NO siempre cubre inundaciones o viento
+            Insurance does NOT always cover flood or wind
           </div>
         </div>
         <p className="mt-6 text-lg font-semibold text-ink">
-          El problema no es la tormenta. Es descubrir demasiado tarde que no estás cubierto.
+          The problem is not the storm. It is finding out too late that you were never covered.
         </p>
       </section>
 
       <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
         <p className="text-xs uppercase tracking-[0.18em] text-coral">
-          Preview del reporte
+          Report preview
         </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink">
-          Esto es lo que vas a ver sobre tu propiedad
+          This is what you will see about your property
         </h2>
         <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr_1fr]">
           <article className="rounded-[2rem] bg-[#102033] p-6 text-white">
@@ -48,7 +48,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="mt-5 text-center text-sm text-slate-200">
-              Riesgo actual: 72/100
+              Current risk: 72/100
             </div>
           </article>
 
@@ -71,7 +71,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="mt-5 text-lg font-semibold text-ink">
-              $65,000 en cobertura insuficiente
+              $65,000 in uncovered exposure
             </div>
           </article>
 
@@ -83,7 +83,7 @@ export default function HomePage() {
               $84,000
             </div>
             <p className="mt-4 text-sm leading-7 text-slate-700">
-              Podrías perder $84,000 en un solo evento
+              You could lose $84,000 in a single event
             </p>
           </article>
         </div>
@@ -91,65 +91,65 @@ export default function HomePage() {
 
       <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
         <p className="text-xs uppercase tracking-[0.18em] text-coral">
-          Propuesta clara
+          Clear value
         </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink">
-          En menos de 5 minutos sabrás si tu propiedad está financieramente expuesta.
+          In less than five minutes, you will know whether your property is financially exposed.
         </h2>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Análisis de tu póliza</div>
-          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Evaluación de riesgo de tormenta</div>
-          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Identificación de vacíos críticos</div>
-          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Estimación de pérdida potencial</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Policy analysis</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Storm-risk review</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Critical gap identification</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Potential loss estimate</div>
         </div>
       </section>
 
       <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
         <p className="text-xs uppercase tracking-[0.18em] text-coral">
-          Cómo funciona
+          How it works
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           <div className="rounded-3xl bg-[#102033] p-6 text-white">
             <div className="text-xs uppercase tracking-[0.18em] text-slate-300">1</div>
-            <div className="mt-3 text-2xl font-semibold">Ingresa tu dirección</div>
+            <div className="mt-3 text-2xl font-semibold">Enter your address</div>
           </div>
           <div className="rounded-3xl bg-[#102033] p-6 text-white">
             <div className="text-xs uppercase tracking-[0.18em] text-slate-300">2</div>
-            <div className="mt-3 text-2xl font-semibold">Sube tu póliza (opcional)</div>
+            <div className="mt-3 text-2xl font-semibold">Upload your policy (optional)</div>
           </div>
           <div className="rounded-3xl bg-[#102033] p-6 text-white">
             <div className="text-xs uppercase tracking-[0.18em] text-slate-300">3</div>
-            <div className="mt-3 text-2xl font-semibold">Recibe tu reporte</div>
+            <div className="mt-3 text-2xl font-semibold">Receive your report</div>
           </div>
         </div>
       </section>
 
       <section className="print-hide rounded-[2rem] border border-white/70 bg-[#102033] p-8 text-white shadow-card">
         <p className="text-xs uppercase tracking-[0.18em] text-coral">
-          Precio + decisión
+          Price and decision
         </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-          Empieza por $49 — y decide con información real, no suposiciones.
+          Start for $49 and decide with real information, not assumptions.
         </h2>
         <div className="mt-6 flex flex-wrap gap-4">
           <div className="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-100">
-            Menos que una inspección
+            Less than an inspection
           </div>
           <div className="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-100">
-            Mucho menos que un error de cobertura
+            Far less than a coverage mistake
           </div>
         </div>
       </section>
 
       <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
         <p className="text-xs uppercase tracking-[0.18em] text-coral">
-          Reducción de fricción
+          Reduced friction
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">Sin suscripción</div>
-          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">Sin llamadas obligatorias</div>
-          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">Información privada</div>
-          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">Pago único</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">No subscription</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">No mandatory calls</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">Private information</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">One-time payment</div>
         </div>
       </section>
 
