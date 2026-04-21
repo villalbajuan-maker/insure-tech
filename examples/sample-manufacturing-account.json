@@ -1,0 +1,219 @@
+{
+  "insuredEntity": {
+    "id": "insured-acme-manufacturing",
+    "name": "Acme Manufacturing Group",
+    "industry": "Industrial manufacturing",
+    "regionsOfOperation": ["Colombia", "Mexico", "United States"],
+    "annualRevenue": {
+      "amount": 18000000,
+      "currency": "USD"
+    },
+    "employeeCount": 240,
+    "businessActivities": [
+      "Metal component manufacturing",
+      "Regional distribution",
+      "Vendor-managed inventory services"
+    ],
+    "criticalDependencies": [
+      "Primary production plant in Colombia",
+      "ERP platform",
+      "Third-party logistics providers",
+      "Cross-border sales operations"
+    ]
+  },
+  "riskExposures": [
+    {
+      "id": "exp-cyber-ransomware",
+      "type": "cyber",
+      "title": "Ransomware and extortion exposure",
+      "description": "The insured depends on connected operational and administrative systems, creating material interruption risk in the event of a cyber attack.",
+      "businessDriver": "ERP dependence and regional digital operations",
+      "regionsImpacted": ["Colombia", "Mexico", "United States"],
+      "severity": "high",
+      "likelihood": "medium",
+      "recommendedCoverageTypes": ["cyber", "business_interruption"],
+      "minimumControlRequirements": [
+        "Multi-factor authentication",
+        "Offline backups",
+        "Incident response plan"
+      ]
+    },
+    {
+      "id": "exp-bi-plant-outage",
+      "type": "business_interruption",
+      "title": "Production plant outage",
+      "description": "A plant shutdown would materially affect revenue generation and customer commitments.",
+      "businessDriver": "Single-site production concentration",
+      "regionsImpacted": ["Colombia"],
+      "severity": "critical",
+      "likelihood": "medium",
+      "recommendedCoverageTypes": ["property", "business_interruption"],
+      "minimumControlRequirements": [
+        "Business continuity plan",
+        "Alternative supplier strategy"
+      ]
+    },
+    {
+      "id": "exp-products-liability",
+      "type": "liability",
+      "title": "Products liability exposure",
+      "description": "Manufactured components may create bodily injury or property damage claims in downstream use.",
+      "businessDriver": "Regional distribution of physical products",
+      "regionsImpacted": ["Colombia", "Mexico", "United States"],
+      "severity": "high",
+      "likelihood": "medium",
+      "recommendedCoverageTypes": ["general_liability"],
+      "minimumControlRequirements": [
+        "Quality control program",
+        "Product traceability"
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "id": "pol-property-001",
+      "policyNumber": "PROP-2026-001",
+      "carrierName": "Atlas Insurance",
+      "coverageType": "property",
+      "status": "bound",
+      "effectiveDate": "2026-01-01",
+      "expirationDate": "2026-12-31",
+      "territory": ["Colombia"],
+      "insuredEntityId": "insured-acme-manufacturing",
+      "coverageLines": [
+        {
+          "id": "line-property-damage",
+          "name": "Property Damage",
+          "category": "property",
+          "coveredExposures": ["Plant damage", "Equipment damage"],
+          "limits": [
+            {
+              "id": "limit-property-main",
+              "name": "Property limit",
+              "amount": {
+                "amount": 5000000,
+                "currency": "USD"
+              },
+              "basis": "per_occurrence"
+            }
+          ],
+          "deductibles": [
+            {
+              "id": "ded-property-main",
+              "name": "Property deductible",
+              "amount": {
+                "amount": 50000,
+                "currency": "USD"
+              },
+              "basis": "per_occurrence"
+            }
+          ],
+          "clauses": [],
+          "exclusions": [
+            {
+              "id": "exc-equipment-breakdown",
+              "title": "Equipment Breakdown Exclusion",
+              "description": "Mechanical and electrical breakdown losses are excluded unless separately endorsed.",
+              "appliesToExposureTypes": ["property", "business_interruption"],
+              "severity": "high"
+            }
+          ],
+          "waitingPeriods": [],
+          "status": "included"
+        },
+        {
+          "id": "line-business-interruption",
+          "name": "Business Interruption",
+          "category": "business_interruption",
+          "coveredExposures": ["Loss of gross profit after physical damage"],
+          "limits": [
+            {
+              "id": "limit-bi-main",
+              "name": "Business interruption limit",
+              "amount": {
+                "amount": 1000000,
+                "currency": "USD"
+              },
+              "basis": "annual"
+            }
+          ],
+          "deductibles": [],
+          "clauses": [
+            {
+              "id": "clause-bi-trigger",
+              "title": "Physical Damage Trigger",
+              "clauseType": "trigger",
+              "summary": "Coverage applies only after covered physical loss or damage."
+            }
+          ],
+          "exclusions": [],
+          "waitingPeriods": [
+            {
+              "id": "wait-bi-72h",
+              "name": "Business interruption waiting period",
+              "durationHours": 72
+            }
+          ],
+          "status": "included"
+        }
+      ],
+      "endorsements": [],
+      "sourceDocument": {
+        "documentName": "Atlas Property Policy 2026"
+      }
+    },
+    {
+      "id": "pol-gl-001",
+      "policyNumber": "GL-2026-010",
+      "carrierName": "Harbor Casualty",
+      "coverageType": "general_liability",
+      "status": "bound",
+      "effectiveDate": "2026-01-01",
+      "expirationDate": "2026-12-31",
+      "territory": ["Colombia", "Mexico"],
+      "insuredEntityId": "insured-acme-manufacturing",
+      "coverageLines": [
+        {
+          "id": "line-general-liability",
+          "name": "Commercial General Liability",
+          "category": "general_liability",
+          "coveredExposures": ["Third-party bodily injury", "Third-party property damage"],
+          "limits": [
+            {
+              "id": "limit-gl-main",
+              "name": "General liability limit",
+              "amount": {
+                "amount": 2000000,
+                "currency": "USD"
+              },
+              "basis": "aggregate"
+            }
+          ],
+          "deductibles": [],
+          "clauses": [],
+          "exclusions": [
+            {
+              "id": "exc-us-sales",
+              "title": "United States Sales Exclusion",
+              "description": "Claims arising from products sold into the United States are excluded.",
+              "appliesToExposureTypes": ["liability"],
+              "severity": "critical"
+            }
+          ],
+          "waitingPeriods": [],
+          "status": "included"
+        }
+      ],
+      "endorsements": [],
+      "sourceDocument": {
+        "documentName": "Harbor GL Policy 2026"
+      }
+    }
+  ],
+  "expectedGapSignals": [
+    "No cyber policy despite material ransomware exposure.",
+    "Business interruption depends on physical damage trigger and may not respond to cyber-caused downtime.",
+    "Property policy excludes equipment breakdown despite plant dependency.",
+    "General liability territory and exclusions do not align with United States sales exposure."
+  ]
+}
