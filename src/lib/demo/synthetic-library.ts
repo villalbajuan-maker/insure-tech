@@ -54,7 +54,10 @@ export interface SyntheticScenario {
     endorsements: string[];
   };
   policy_notes: string[];
-  analysis_snapshot: Omit<FloridaPolicySnapshot, "evidence">;
+  analysis_snapshot: Omit<
+    FloridaPolicySnapshot,
+    "evidence" | "estimatedReplacementValue" | "estimatedReplacementValueAssumption"
+  >;
   expected_findings: string[];
 }
 
@@ -66,7 +69,7 @@ interface SyntheticLibraryShape {
   cases: SyntheticScenario[];
 }
 
-const typedLibrary = library as SyntheticLibraryShape;
+const typedLibrary = library as unknown as SyntheticLibraryShape;
 
 export function getSyntheticLibrary(): SyntheticLibraryShape {
   return typedLibrary;
@@ -98,6 +101,12 @@ function buildIntake(caseItem: SyntheticScenario): IntakeFormData {
 function buildSnapshot(caseItem: SyntheticScenario): FloridaPolicySnapshot {
   return {
     ...caseItem.analysis_snapshot,
+    estimatedReplacementValue: {
+      amount: caseItem.declarations.coverage_a_dwelling,
+      currency: "USD"
+    },
+    estimatedReplacementValueAssumption:
+      "Estimated replacement value is based on the synthetic scenario's Coverage A dwelling amount.",
     evidence: [
       buildEvidenceReference(
         `${caseItem.id}-declarations-page.md`,

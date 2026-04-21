@@ -3,7 +3,10 @@ import type {
   FloridaPolicySnapshot,
   IntakeFormData
 } from "@/src/domain/florida-homeowners.types";
-import type { SourceReference } from "@/src/domain/policy-gap-analysis.types";
+import type {
+  MoneyAmount,
+  SourceReference
+} from "@/src/domain/policy-gap-analysis.types";
 import type { ExtractedPdfDocument } from "@/src/lib/extraction/pdf-text-extractor";
 
 function normalizeWhitespace(input: string): string {
@@ -47,6 +50,32 @@ function buildEvidence(documentName: string, snippet: string | undefined): Sourc
   return {
     documentName,
     excerpt: snippet
+  };
+}
+
+function estimateReplacementValue(intake: IntakeFormData): {
+  estimatedReplacementValue: MoneyAmount;
+  estimatedReplacementValueAssumption: string;
+} {
+  const providedValue = intake.propertyProfile.estimatedDwellingCoverage;
+  if (typeof providedValue === "number" && providedValue > 0) {
+    return {
+      estimatedReplacementValue: {
+        amount: providedValue,
+        currency: "USD"
+      },
+      estimatedReplacementValueAssumption:
+        "Estimated replacement value is based on the provided dwelling coverage figure from the property profile."
+    };
+  }
+
+  return {
+    estimatedReplacementValue: {
+      amount: 375000,
+      currency: "USD"
+    },
+    estimatedReplacementValueAssumption:
+      "No property valuation data was provided, so the system used a Florida default replacement-value range of $250,000-$500,000 and selected the midpoint estimate of $375,000."
   };
 }
 
@@ -106,6 +135,7 @@ export function normalizeFloridaPolicySnapshot(params: {
   const includesCatastrophicGroundCoverCollapseOnly =
     !includesSinkholeCoverage &&
     (cgccPattern.test(joinedText) || /sinkhole/i.test(joinedText));
+  const replacementValue = estimateReplacementValue(params.intake);
 
   const evidence: SourceReference[] = params.documents
     .flatMap((document) => {
@@ -141,6 +171,9 @@ export function normalizeFloridaPolicySnapshot(params: {
     includesCatastrophicGroundCoverCollapseOnly,
     allOtherPerilDeductiblePercent,
     hurricaneDeductiblePercent,
+    estimatedReplacementValue: replacementValue.estimatedReplacementValue,
+    estimatedReplacementValueAssumption:
+      replacementValue.estimatedReplacementValueAssumption,
     evidence: evidence.length
       ? evidence
       : [

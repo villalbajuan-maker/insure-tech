@@ -15,6 +15,14 @@ function toneStyles(tone: CompletedAnalysisView["summaryCards"][number]["tone"])
   }
 }
 
+function formatCurrency(amount: number, currency = "USD") {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0
+  }).format(amount);
+}
+
 export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
   const { request } = analysis;
   const report = request.report;
@@ -23,6 +31,10 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
   if (!report) {
     return null;
   }
+
+  const topScenarios = [...report.scenarioExposures]
+    .sort((a, b) => b.estimatedImpact.amount - a.estimatedImpact.amount)
+    .slice(0, 3);
 
   return (
     <div className="report-print-root space-y-8">
@@ -35,6 +47,15 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">
               {leadDocument}
             </h1>
+            {report.totalExposureEstimate ? (
+              <p className="mt-4 text-2xl font-semibold tracking-tight text-ink">
+                Estimated financial exposure:{" "}
+                {formatCurrency(
+                  report.totalExposureEstimate.amount,
+                  report.totalExposureEstimate.currency
+                )}
+              </p>
+            ) : null}
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
               {report.executiveSummary}
             </p>
@@ -110,6 +131,17 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
                   <p className="mt-3 text-sm leading-7 text-slate-600">
                     {finding.description}
                   </p>
+                  {finding.financialImpactEstimate ? (
+                    <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-4 text-sm text-slate-700">
+                      <div className="font-semibold">Estimated impact</div>
+                      <div className="mt-2 text-lg font-semibold text-ink">
+                        {formatCurrency(
+                          finding.financialImpactEstimate.amount,
+                          finding.financialImpactEstimate.currency
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
                   <div className="mt-4 rounded-2xl bg-mist px-4 py-4 text-sm text-slate-700">
                     <div className="font-semibold">Evidence notes</div>
                     <ul className="mt-2 space-y-2">
@@ -129,6 +161,34 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
         </div>
 
         <div className="space-y-6">
+          <section className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
+            <h2 className="text-2xl font-semibold">What this could cost you</h2>
+            <div className="mt-6 space-y-4">
+              {topScenarios.length === 0 ? (
+                <div className="rounded-3xl bg-emerald-50 p-5 text-sm text-emerald-700">
+                  No economic exposure scenarios were generated in this run.
+                </div>
+              ) : (
+                topScenarios.map((scenario) => (
+                  <article key={scenario.id} className="rounded-3xl bg-mist p-5">
+                    <div className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                      {scenario.label}
+                    </div>
+                    <div className="mt-3 text-3xl font-semibold text-ink">
+                      {formatCurrency(
+                        scenario.estimatedImpact.amount,
+                        scenario.estimatedImpact.currency
+                      )}
+                    </div>
+                    <p className="mt-3 text-sm leading-7 text-slate-700">
+                      {scenario.basis}
+                    </p>
+                  </article>
+                ))
+              )}
+            </div>
+          </section>
+
           <section className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
             <h2 className="text-2xl font-semibold">Recommendations</h2>
             <div className="mt-6 space-y-4">
@@ -155,6 +215,16 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
                 <li key={note}>{note}</li>
               ))}
             </ul>
+            <div className="mt-6 border-t border-white/10 pt-6">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+                Assumptions used
+              </h3>
+              <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-200">
+                {report.assumptionsUsed.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            </div>
           </section>
         </div>
       </section>

@@ -1,8 +1,10 @@
 import type {
   AnalysisReport,
   GapFinding,
+  MoneyAmount,
   Recommendation,
   RecommendationActionType,
+  ScenarioExposureEstimate,
   SourceReference
 } from "@/src/domain/policy-gap-analysis.types";
 import type {
@@ -38,6 +40,7 @@ function createFinding(params: {
   type: GapFinding["findingType"];
   rule: StandardsRule;
   snapshot: FloridaPolicySnapshot;
+  financialImpactEstimate?: MoneyAmount;
 }): GapFinding {
   return {
     id: params.id,
@@ -48,6 +51,7 @@ function createFinding(params: {
     exposureIds: [],
     policyIds: [],
     evidence: buildEvidence(params.rule, params.snapshot),
+    financialImpactEstimate: params.financialImpactEstimate,
     confidence: 0.82
   };
 }
@@ -80,15 +84,57 @@ function getRule(ruleId: string): StandardsRule {
   return rule;
 }
 
+function createUsdAmount(amount: number): MoneyAmount {
+  return {
+    amount: Math.round(amount),
+    currency: "USD"
+  };
+}
+
+function calculatePercentExposure(
+  replacementValue: number,
+  percent: number
+): MoneyAmount {
+  return createUsdAmount(replacementValue * (percent / 100));
+}
+
+function createScenarioExposure(params: {
+  id: string;
+  label: string;
+  basis: string;
+  percentOfReplacementValue?: number;
+  explicitAmount?: MoneyAmount;
+  triggerFindingId: string;
+  replacementValue: number;
+}): ScenarioExposureEstimate {
+  const estimatedImpact =
+    params.explicitAmount ??
+    calculatePercentExposure(
+      params.replacementValue,
+      params.percentOfReplacementValue ?? 0
+    );
+
+  return {
+    id: params.id,
+    label: params.label,
+    basis: params.basis,
+    estimatedImpact,
+    triggerFindingId: params.triggerFindingId
+  };
+}
+
 export function evaluateFloridaHomeownersGapAnalysis(
   input: BuildReportInput
 ): AnalysisReport {
   const findings: GapFinding[] = [];
   const recommendations: Recommendation[] = [];
+  const scenarioExposures: ScenarioExposureEstimate[] = [];
   const snapshot = input.snapshot;
+  const replacementValue = snapshot.estimatedReplacementValue.amount;
 
   if (snapshot.excludesFlood && !snapshot.hasFloodPolicy) {
     const rule = getRule("fl-dfs-flood-companion-policy");
+    const financialImpactEstimate = calculatePercentExposure(replacementValue, 40);
     const finding = createFinding({
       id: "finding-flood-gap",
       type: "missing_coverage",
@@ -97,10 +143,21 @@ export function evaluateFloridaHomeownersGapAnalysis(
       description:
         "The available policy package appears to exclude flood damage, and no separate flood policy was identified in the uploaded documents.",
       rule,
-      snapshot
+      snapshot,
+      financialImpactEstimate
     });
 
     findings.push(finding);
+    scenarioExposures.push(
+      createScenarioExposure({
+        id: "scenario-flood-gap",
+        label: "Flood loss scenario",
+        basis: `40% of estimated replacement value ($${replacementValue.toLocaleString()}) because flood coverage appears to be missing.`,
+        percentOfReplacementValue: 40,
+        triggerFindingId: finding.id,
+        replacementValue
+      })
+    );
     recommendations.push(
       createRecommendation({
         id: "rec-flood-gap",
@@ -119,6 +176,7 @@ export function evaluateFloridaHomeownersGapAnalysis(
 
   if (!snapshot.coversWindstorm || snapshot.excludesWindstorm) {
     const rule = getRule("fl-dfs-windstorm-treatment");
+    const financialImpactEstimate = calculatePercentExposure(replacementValue, 30);
     const finding = createFinding({
       id: "finding-wind-gap",
       type: "missing_coverage",
@@ -127,10 +185,21 @@ export function evaluateFloridaHomeownersGapAnalysis(
       description:
         "The current policy snapshot suggests windstorm, hurricane, or hail protection may not be fully included in the main homeowners package.",
       rule,
-      snapshot
+      snapshot,
+      financialImpactEstimate
     });
 
     findings.push(finding);
+    scenarioExposures.push(
+      createScenarioExposure({
+        id: "scenario-wind-gap",
+        label: "Wind damage scenario",
+        basis: `30% of estimated replacement value ($${replacementValue.toLocaleString()}) because windstorm treatment appears incomplete or excluded.`,
+        percentOfReplacementValue: 30,
+        triggerFindingId: finding.id,
+        replacementValue
+      })
+    );
     recommendations.push(
       createRecommendation({
         id: "rec-wind-gap",
@@ -150,6 +219,7 @@ export function evaluateFloridaHomeownersGapAnalysis(
     (snapshot.ordinanceOrLawLimitPercent ?? 0) < 25
   ) {
     const rule = getRule("fl-627-7011-ordinance-or-law");
+    const financialImpactEstimate = calculatePercentExposure(replacementValue, 15);
     const finding = createFinding({
       id: "finding-ordinance-gap",
       type: "insufficient_limit",
@@ -158,10 +228,21 @@ export function evaluateFloridaHomeownersGapAnalysis(
       description:
         "The extracted policy snapshot does not clearly show adequate ordinance-or-law treatment, which can matter when rebuilding must comply with updated code requirements.",
       rule,
-      snapshot
+      snapshot,
+      financialImpactEstimate
     });
 
     findings.push(finding);
+    scenarioExposures.push(
+      createScenarioExposure({
+        id: "scenario-ordinance-gap",
+        label: "Code-upgrade scenario",
+        basis: `15% of estimated replacement value ($${replacementValue.toLocaleString()}) because ordinance-or-law coverage appears missing or weak.`,
+        percentOfReplacementValue: 15,
+        triggerFindingId: finding.id,
+        replacementValue
+      })
+    );
     recommendations.push(
       createRecommendation({
         id: "rec-ordinance-gap",
@@ -209,6 +290,7 @@ export function evaluateFloridaHomeownersGapAnalysis(
 
   if (!snapshot.includesReplacementCost || snapshot.actualCashValueApplies) {
     const rule = getRule("fl-627-7011-replacement-cost");
+    const financialImpactEstimate = calculatePercentExposure(replacementValue, 25);
     const finding = createFinding({
       id: "finding-replacement-cost-gap",
       type: "wording_ambiguity",
@@ -217,10 +299,21 @@ export function evaluateFloridaHomeownersGapAnalysis(
       description:
         "The extracted wording suggests the dwelling or related components may settle on an actual cash value basis rather than full replacement cost.",
       rule,
-      snapshot
+      snapshot,
+      financialImpactEstimate
     });
 
     findings.push(finding);
+    scenarioExposures.push(
+      createScenarioExposure({
+        id: "scenario-replacement-cost-gap",
+        label: "Actual cash value settlement scenario",
+        basis: `25% of estimated replacement value ($${replacementValue.toLocaleString()}) because loss settlement may be actual cash value instead of replacement cost.`,
+        percentOfReplacementValue: 25,
+        triggerFindingId: finding.id,
+        replacementValue
+      })
+    );
     recommendations.push(
       createRecommendation({
         id: "rec-replacement-cost-gap",
@@ -240,6 +333,14 @@ export function evaluateFloridaHomeownersGapAnalysis(
     (snapshot.allOtherPerilDeductiblePercent ?? 0) >= 3
   ) {
     const rule = getRule("fl-best-practice-deductible-pressure");
+    const deductiblePercent = Math.max(
+      snapshot.hurricaneDeductiblePercent ?? 0,
+      snapshot.allOtherPerilDeductiblePercent ?? 0
+    );
+    const financialImpactEstimate = calculatePercentExposure(
+      replacementValue,
+      deductiblePercent
+    );
     const finding = createFinding({
       id: "finding-deductible-pressure",
       type: "deductible_mismatch",
@@ -248,10 +349,21 @@ export function evaluateFloridaHomeownersGapAnalysis(
       description:
         "The policy appears to include deductibles large enough to create meaningful out-of-pocket exposure after a loss.",
       rule,
-      snapshot
+      snapshot,
+      financialImpactEstimate
     });
 
     findings.push(finding);
+    scenarioExposures.push(
+      createScenarioExposure({
+        id: "scenario-deductible-pressure",
+        label: "Deductible retention scenario",
+        basis: `${deductiblePercent}% of estimated replacement value ($${replacementValue.toLocaleString()}) based on the highest detected deductible percentage.`,
+        explicitAmount: financialImpactEstimate,
+        triggerFindingId: finding.id,
+        replacementValue
+      })
+    );
     recommendations.push(
       createRecommendation({
         id: "rec-deductible-pressure",
@@ -265,6 +377,13 @@ export function evaluateFloridaHomeownersGapAnalysis(
       })
     );
   }
+
+  const totalExposureEstimate =
+    scenarioExposures.length > 0
+      ? scenarioExposures.reduce((max, scenario) =>
+          scenario.estimatedImpact.amount > max.amount ? scenario.estimatedImpact : max
+        , scenarioExposures[0].estimatedImpact)
+      : undefined;
 
   const summaryParts = [
     `We reviewed ${input.intake.documentCount} uploaded document${input.intake.documentCount === 1 ? "" : "s"} from the submitted policy package.`,
@@ -281,9 +400,17 @@ export function evaluateFloridaHomeownersGapAnalysis(
     exposuresReviewed: [],
     findings,
     recommendations,
+    scenarioExposures,
+    totalExposureEstimate,
     executiveSummary: summaryParts.join(" "),
+    assumptionsUsed: [
+      snapshot.estimatedReplacementValueAssumption,
+      "Scenario exposure estimates are deterministic heuristics based on the current rules engine, not claims predictions or actuarial models.",
+      "Total exposure estimate is the maximum single scenario exposure, not the sum of all scenarios."
+    ],
     methodologyNotes: [
       "This report is based on structured extraction, a Florida standards registry, and a deterministic rules engine.",
+      "Economic exposure estimates use fixed scenario percentages tied to the triggered coverage gaps.",
       "The report is decision support and not legal advice or coverage confirmation.",
       "Ambiguous policy wording should be escalated for licensed review."
     ]

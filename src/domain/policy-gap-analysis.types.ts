@@ -161,6 +161,14 @@ export interface FindingEvidence {
   sourceReferences: SourceReference[];
 }
 
+export interface ScenarioExposureEstimate {
+  id: string;
+  label: string;
+  basis: string;
+  estimatedImpact: MoneyAmount;
+  triggerFindingId?: string;
+}
+
 export interface GapFinding {
   id: string;
   findingType: GapFindingType;
@@ -193,6 +201,9 @@ export interface AnalysisReport {
   exposuresReviewed: string[];
   findings: GapFinding[];
   recommendations: Recommendation[];
+  scenarioExposures: ScenarioExposureEstimate[];
+  totalExposureEstimate?: MoneyAmount;
   executiveSummary: string;
+  assumptionsUsed: string[];
   methodologyNotes: string[];
 }

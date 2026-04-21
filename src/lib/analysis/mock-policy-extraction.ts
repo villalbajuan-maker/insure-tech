@@ -54,6 +54,14 @@ export function mockExtractFloridaPolicySnapshot(params: {
       intake.propertyProfile.county !== "Hernando",
     allOtherPerilDeductiblePercent: estimatedCoverage > 900000 ? 3 : 2,
     hurricaneDeductiblePercent: hasWindPolicy ? 2 : 5,
+    estimatedReplacementValue: {
+      amount: estimatedCoverage > 0 ? estimatedCoverage : 375000,
+      currency: "USD"
+    },
+    estimatedReplacementValueAssumption:
+      estimatedCoverage > 0
+        ? "Estimated replacement value is based on the provided dwelling coverage figure from intake."
+        : "No property valuation data was provided, so the mock extractor used a Florida default midpoint replacement estimate of $375,000.",
     evidence
   };
 }

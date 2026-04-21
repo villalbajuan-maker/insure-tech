@@ -2,6 +2,7 @@ import type {
   AnalysisReport,
   CurrencyCode,
   GapFinding,
+  MoneyAmount,
   Recommendation,
   SourceReference
 } from "@/src/domain/policy-gap-analysis.types";
@@ -139,6 +140,8 @@ export interface FloridaPolicySnapshot {
   includesCatastrophicGroundCoverCollapseOnly: boolean;
   allOtherPerilDeductiblePercent?: number;
   hurricaneDeductiblePercent?: number;
+  estimatedReplacementValue: MoneyAmount;
+  estimatedReplacementValueAssumption: string;
   evidence: SourceReference[];
 }
 
