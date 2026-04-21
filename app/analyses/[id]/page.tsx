@@ -1,15 +1,8 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ReportView } from "@/components/report/report-view";
-import {
-  getAnalysisRequest,
-  getCompletedAnalysisView,
-  processAnalysisRequest
-} from "@/src/lib/repository/analysis-store";
+import { redirect } from "next/navigation";
 
 interface AnalysisPageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ refresh?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default async function AnalysisPage({
@@ -18,53 +11,21 @@ export default async function AnalysisPage({
 }: AnalysisPageProps) {
   const { id } = await params;
   const query = await searchParams;
+  const next = new URLSearchParams();
 
-  const existing = getAnalysisRequest(id);
-  if (!existing) {
-    notFound();
+  for (const [key, value] of Object.entries(query)) {
+    if (typeof value === "string") {
+      next.set(key, value);
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        next.append(key, item);
+      }
+    }
   }
 
-  if (query.refresh === "1" && existing.status !== "completed") {
-    await processAnalysisRequest(id);
-  }
-
-  const view = getCompletedAnalysisView(id);
-  const request = getAnalysisRequest(id);
-
-  if (!request) {
-    notFound();
-  }
-
-  return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-8 md:px-8 md:py-10">
-      <div className="flex items-center justify-between">
-        <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-ink">
-          Back to intake
-        </Link>
-        <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-          {request.status.replaceAll("_", " ")}
-        </span>
-      </div>
-
-      {view ? (
-        <ReportView analysis={view} />
-      ) : (
-        <section className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
-          <h1 className="text-3xl font-semibold">Analysis in progress</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-            The uploaded PDFs are being processed. If the report is not visible yet,
-            refresh the page and the prototype will retry the extraction pipeline.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-4">
-            <Link
-              href={`/analyses/${id}?refresh=1`}
-              className="rounded-full bg-coral px-6 py-3 text-sm font-semibold text-white"
-            >
-              Retry analysis
-            </Link>
-          </div>
-        </section>
-      )}
-    </main>
-  );
+  const suffix = next.toString();
+  redirect(`/analysis/${id}${suffix ? `?${suffix}` : ""}`);
 }

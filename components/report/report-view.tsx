@@ -1,4 +1,5 @@
 import type { CompletedAnalysisView } from "@/src/domain/florida-homeowners.types";
+import type { MoneyAmount } from "@/src/domain/policy-gap-analysis.types";
 import { titleCase } from "@/src/lib/utils";
 import { ExportReportButton } from "@/components/report/export-report-button";
 
@@ -23,7 +24,15 @@ function formatCurrency(amount: number, currency = "USD") {
   }).format(amount);
 }
 
-export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
+export function ReportView({
+  analysis,
+  exposureOverride,
+  banner
+}: {
+  analysis: CompletedAnalysisView;
+  exposureOverride?: MoneyAmount;
+  banner?: string;
+}) {
   const { request } = analysis;
   const report = request.report;
   const leadDocument = request.uploadedDocuments[0]?.fileName ?? "Uploaded policy package";
@@ -51,14 +60,19 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
               <p className="mt-4 text-2xl font-semibold tracking-tight text-ink">
                 Estimated financial exposure:{" "}
                 {formatCurrency(
-                  report.totalExposureEstimate.amount,
-                  report.totalExposureEstimate.currency
+                  (exposureOverride ?? report.totalExposureEstimate).amount,
+                  (exposureOverride ?? report.totalExposureEstimate).currency
                 )}
               </p>
             ) : null}
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
               {report.executiveSummary}
             </p>
+            {banner ? (
+              <div className="mt-4 inline-flex rounded-full bg-mist px-4 py-2 text-sm font-medium text-slate-700">
+                {banner}
+              </div>
+            ) : null}
           </div>
           <div className="rounded-3xl bg-[#102033] px-6 py-5 text-white">
             <div className="text-xs uppercase tracking-[0.18em] text-slate-300">

@@ -27,7 +27,7 @@ export async function createPrototypeCheckoutSession(params: {
       status: "pending" as const,
       amount: 49,
       currency: "USD" as const,
-      checkoutUrl: `/analyses/${params.analysisId}?checkout=demo`,
+      checkoutUrl: `/analysis/${params.analysisId}?checkout=demo`,
       sessionId: `demo-session-${params.analysisId}`
     };
   }
@@ -47,19 +47,19 @@ export async function createPrototypeCheckoutSession(params: {
         }
       }
     ],
-    success_url: `${successUrl}/analyses/${params.analysisId}?payment=success`,
+    success_url: `${successUrl}/analysis/${params.analysisId}?payment=success`,
     cancel_url: `${successUrl}/?payment=cancelled`,
     metadata: {
       analysisId: params.analysisId
     }
   });
 
-  return {
-    provider: "stripe" as const,
-    status: "pending" as const,
-    amount: 49,
-    currency: "USD" as const,
-    checkoutUrl: session.url ?? `/analyses/${params.analysisId}`,
-    sessionId: session.id
-  };
+    return {
+      provider: "stripe" as const,
+      status: "pending" as const,
+      amount: 49,
+      currency: "USD" as const,
+      checkoutUrl: session.url ?? `/analysis/${params.analysisId}`,
+      sessionId: session.id
+    };
 }
