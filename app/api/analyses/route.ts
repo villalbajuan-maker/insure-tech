@@ -1,85 +1,70 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
-import type { IntakeFormData } from "@/src/domain/florida-homeowners.types";
-import { createAnalysisRequest } from "@/src/lib/repository/analysis-store";
-
-const intakeSchema = z.object({
-  fullName: z.string().min(2),
-  email: z.string().email(),
-  addressLine1: z.string().min(3),
-  city: z.string().min(2),
-  zipCode: z.string().min(5),
-  county: z.string().optional(),
-  propertyType: z.enum([
-    "single_family",
-    "condo",
-    "townhome",
-    "multifamily_small",
-    "other"
-  ]),
-  occupancyType: z.enum([
-    "owner_occupied",
-    "tenant_occupied",
-    "seasonal",
-    "vacant",
-    "mixed"
-  ]),
-  estimatedDwellingCoverage: z
-    .string()
-    .optional()
-    .transform((value) => (value ? Number(value) : undefined)),
-  documentCount: z
-    .string()
-    .transform((value) => Number(value))
-    .pipe(z.number().int().min(1)),
-  fileNames: z.string().min(3),
-  declaredPolicies: z.string().min(1),
-  agreedToDisclaimer: z.literal("on")
-});
+import type {
+  CompletedAnalysisView,
+  IntakeFormData
+} from "@/src/domain/florida-homeowners.types";
+import {
+  createAnalysisRequest,
+  getCompletedAnalysisView,
+  processAnalysisRequest
+} from "@/src/lib/repository/analysis-store";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
-  const rawPayload = Object.fromEntries(formData.entries());
-  const payload = intakeSchema.parse(rawPayload);
+
+  const uploadedFiles = formData
+    .getAll("policyFiles")
+    .filter((item): item is File => item instanceof File && item.size > 0);
+
+  if (!uploadedFiles.length) {
+    return NextResponse.json(
+      { error: "At least one PDF file is required." },
+      { status: 400 }
+    );
+  }
+
+  const files = await Promise.all(
+    uploadedFiles.map(async (file) => ({
+      fileName: file.name,
+      mimeType: file.type || "application/pdf",
+      sizeBytes: file.size,
+      bytes: Buffer.from(await file.arrayBuffer())
+    }))
+  );
 
   const intake: IntakeFormData = {
-    fullName: payload.fullName,
-    email: payload.email,
-    documentCount: payload.documentCount,
-    declaredPolicies: payload.declaredPolicies
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean),
+    fullName: "Policy reviewer",
+    email: "prototype@local",
+    documentCount: files.length,
+    declaredPolicies: files.map((file) => file.fileName),
     agreedToDisclaimer: true,
     propertyProfile: {
-      addressLine1: payload.addressLine1,
-      city: payload.city,
+      addressLine1: "Uploaded policy package",
+      city: "Florida",
       state: "FL",
-      zipCode: payload.zipCode,
-      county: payload.county,
-      propertyType: payload.propertyType,
-      occupancyType: payload.occupancyType,
-      estimatedDwellingCoverage: payload.estimatedDwellingCoverage
+      zipCode: "00000",
+      propertyType: "single_family",
+      occupancyType: "owner_occupied"
     }
   };
-
-  const files = payload.fileNames
-    .split("\n")
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .map((fileName) => ({
-      fileName,
-      mimeType: "application/pdf",
-      sizeBytes: 1_500_000
-    }));
 
   const analysis = await createAnalysisRequest({
     intake,
     files
   });
 
+  await processAnalysisRequest(analysis.id);
+  const view = getCompletedAnalysisView(analysis.id) as CompletedAnalysisView | null;
+
+  if (!view) {
+    return NextResponse.json(
+      { error: "The analysis could not be completed for the uploaded PDFs." },
+      { status: 500 }
+    );
+  }
+
   return NextResponse.json({
     analysisId: analysis.id,
-    checkoutUrl: analysis.payment.checkoutUrl ?? `/analyses/${analysis.id}`
+    analysis: view
   });
 }

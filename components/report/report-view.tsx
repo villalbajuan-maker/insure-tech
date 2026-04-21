@@ -1,5 +1,5 @@
 import type { CompletedAnalysisView } from "@/src/domain/florida-homeowners.types";
-import { formatCurrency, titleCase } from "@/src/lib/utils";
+import { titleCase } from "@/src/lib/utils";
 
 function toneStyles(tone: CompletedAnalysisView["summaryCards"][number]["tone"]) {
   switch (tone) {
@@ -17,6 +17,7 @@ function toneStyles(tone: CompletedAnalysisView["summaryCards"][number]["tone"])
 export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
   const { request } = analysis;
   const report = request.report;
+  const leadDocument = request.uploadedDocuments[0]?.fileName ?? "Uploaded policy package";
 
   if (!report) {
     return null;
@@ -28,10 +29,10 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.18em] text-coral">
-              Florida homeowners gap analysis
+              Insurance policy gap analysis
             </p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-              {request.intake.propertyProfile.addressLine1}, {request.intake.propertyProfile.city}
+              {leadDocument}
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
               {report.executiveSummary}
@@ -39,16 +40,28 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
           </div>
           <div className="rounded-3xl bg-[#102033] px-6 py-5 text-white">
             <div className="text-xs uppercase tracking-[0.18em] text-slate-300">
-              Payment
+              Analysis mode
             </div>
             <div className="mt-2 text-xl font-semibold">
-              {formatCurrency(request.payment.amount, request.payment.currency)}
+              PDF upload
             </div>
             <div className="mt-1 text-sm text-slate-300">
-              {titleCase(request.payment.status)}
+              {titleCase(request.status)}
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
+        <h2 className="text-2xl font-semibold">Uploaded documents</h2>
+        <ul className="mt-5 space-y-3 text-sm leading-7 text-slate-700">
+          {request.uploadedDocuments.map((document) => (
+            <li key={document.id}>
+              {document.fileName} · {titleCase(document.category)} ·{" "}
+              {Math.max(1, Math.round(document.sizeBytes / 1024))} KB
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="grid gap-4 md:grid-cols-4">
@@ -95,7 +108,7 @@ export function ReportView({ analysis }: { analysis: CompletedAnalysisView }) {
                       {finding.evidence.flatMap((item) =>
                         item.sourceReferences.map((reference, index) => (
                           <li key={`${finding.id}-${index}`}>
-                            {reference.documentName}: {reference.excerpt}
+                            {reference.documentName}: {reference.excerpt ?? "No excerpt available"}
                           </li>
                         ))
                       )}

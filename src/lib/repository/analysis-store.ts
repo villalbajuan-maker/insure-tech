@@ -1,3 +1,6 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import type {
   AnalysisRequest,
   CompletedAnalysisView,
@@ -8,8 +11,8 @@ import {
   buildSummaryCards,
   evaluateFloridaHomeownersGapAnalysis
 } from "@/src/lib/analysis/florida-rules-engine";
-import { mockExtractFloridaPolicySnapshot } from "@/src/lib/analysis/mock-policy-extraction";
-import { createPrototypeCheckoutSession } from "@/src/lib/payments/stripe";
+import { normalizeFloridaPolicySnapshot } from "@/src/lib/analysis/pdf-policy-normalizer";
+import { extractPdfText } from "@/src/lib/extraction/pdf-text-extractor";
 import { slugify } from "@/src/lib/utils";
 
 declare global {
@@ -45,38 +48,46 @@ function categorizeDocument(fileName: string): UploadedDocument["category"] {
 
 export async function createAnalysisRequest(params: {
   intake: IntakeFormData;
-  files: Array<{ fileName: string; mimeType: string; sizeBytes: number }>;
+  files: Array<{
+    fileName: string;
+    mimeType: string;
+    sizeBytes: number;
+    bytes: Buffer;
+  }>;
 }) {
   const id = `${slugify(params.intake.fullName)}-${Date.now()}`;
   const createdAt = now();
-  const uploadedDocuments: UploadedDocument[] = params.files.map((file, index) => ({
-    id: `${id}-doc-${index + 1}`,
-    fileName: file.fileName,
-    mimeType: file.mimeType,
-    sizeBytes: file.sizeBytes,
-    category: categorizeDocument(file.fileName)
-  }));
+  const uploadDir = path.join(os.tmpdir(), "insure-tech-uploads", id);
+  await mkdir(uploadDir, { recursive: true });
 
-  const payment = await createPrototypeCheckoutSession({
-    analysisId: id,
-    customerEmail: params.intake.email
-  });
+  const uploadedDocuments: UploadedDocument[] = [];
+  for (const [index, file] of params.files.entries()) {
+    const safeFileName = path.basename(file.fileName);
+    const storageKey = path.join(uploadDir, safeFileName);
+    await writeFile(storageKey, file.bytes);
+    uploadedDocuments.push({
+      id: `${id}-doc-${index + 1}`,
+      fileName: safeFileName,
+      mimeType: file.mimeType,
+      sizeBytes: file.sizeBytes,
+      category: categorizeDocument(safeFileName),
+      storageKey
+    });
+  }
 
   const request: AnalysisRequest = {
     id,
     createdAt,
     updatedAt: createdAt,
-    status: "payment_pending",
+    status: "queued",
     intake: params.intake,
     uploadedDocuments,
     payment: {
-      id: payment.sessionId,
-      provider: payment.provider,
-      amount: payment.amount,
-      currency: payment.currency,
-      status: payment.status,
-      checkoutUrl: payment.checkoutUrl,
-      sessionId: payment.sessionId
+      id: `not-required-${id}`,
+      provider: "stripe",
+      amount: 0,
+      currency: "USD",
+      status: "not_required"
     }
   };
 
@@ -107,7 +118,7 @@ export function markPaymentSucceeded(id: string): AnalysisRequest | null {
   return request;
 }
 
-export function processAnalysisRequest(id: string): AnalysisRequest | null {
+export async function processAnalysisRequest(id: string): Promise<AnalysisRequest | null> {
   const request = analysisStore.get(id);
   if (!request) {
     return null;
@@ -116,9 +127,28 @@ export function processAnalysisRequest(id: string): AnalysisRequest | null {
   request.status = "processing";
   request.updatedAt = now();
 
-  const snapshot = mockExtractFloridaPolicySnapshot({
+  const documentsWithPaths = request.uploadedDocuments.filter(
+    (document): document is UploadedDocument & { storageKey: string } =>
+      typeof document.storageKey === "string"
+  );
+
+  const extractedDocuments = await extractPdfText(
+    documentsWithPaths.map((document) => document.storageKey)
+  );
+
+  request.uploadedDocuments = request.uploadedDocuments.map((document) => {
+    const extracted = extractedDocuments.find(
+      (item) => path.basename(item.path) === document.fileName
+    );
+    return {
+      ...document,
+      extractedText: extracted?.text
+    };
+  });
+
+  const snapshot = normalizeFloridaPolicySnapshot({
     intake: request.intake,
-    uploadedDocuments: request.uploadedDocuments
+    documents: extractedDocuments
   });
 
   request.extractedPolicySnapshot = snapshot;

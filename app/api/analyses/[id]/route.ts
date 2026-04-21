@@ -40,7 +40,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   if (body.action === "process") {
-    const processed = processAnalysisRequest(id);
+    const processed = await processAnalysisRequest(id);
     if (!processed) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }

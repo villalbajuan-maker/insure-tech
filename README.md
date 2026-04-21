@@ -57,12 +57,11 @@ This repository now includes a Next.js MVP skeleton for the Florida homeowner ga
 
 ### Included
 
-- Intake landing page and upload form
-- Prototype Stripe checkout flow with demo fallback
-- In-memory analysis request store
+- Minimal upload-first landing page
+- Real PDF upload and immediate same-screen analysis flow
 - Florida standards registry
 - Deterministic rules engine for first Florida gap categories
-- Report page with findings, recommendations, and methodology notes
+- Report rendering with findings, recommendations, and methodology notes
 
 ### Key Paths
 
@@ -72,10 +71,13 @@ This repository now includes a Next.js MVP skeleton for the Florida homeowner ga
 - [src/lib/standards/florida-standards-registry.ts](/Users/juanvillalba/Documents/insure-tech/src/lib/standards/florida-standards-registry.ts)
 - [src/lib/analysis/florida-rules-engine.ts](/Users/juanvillalba/Documents/insure-tech/src/lib/analysis/florida-rules-engine.ts)
 
+## Strategy Inputs
+
+- [docs/strategy/james-storm-protection-integration.md](/Users/juanvillalba/Documents/insure-tech/docs/strategy/james-storm-protection-integration.md) captures how James's external storm-protection funnel brief should influence this repo.
+
 ### Setup
 
 1. Install dependencies with `npm install`
-2. Copy `.env.example` to `.env.local`
-3. Run `npm run dev`
+2. Run `npm run dev`
 
-If Stripe or OpenAI keys are missing, the prototype still works with demo-safe fallbacks for checkout and mock extraction.
+The current prototype works without Stripe or OpenAI keys for the upload-and-analyze path. PDF text extraction is handled server-side with `pdf2json`, and the primary demo flow returns the completed analysis in the same request so the prototype can be deployed cleanly without a database.

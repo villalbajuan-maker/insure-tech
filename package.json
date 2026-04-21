@@ -7,11 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json"
   },
   "dependencies": {
     "next": "15.3.2",
     "openai": "^4.104.0",
+    "pdf-parse": "^2.4.5",
+    "pdf2json": "^4.0.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "stripe": "^18.1.1",

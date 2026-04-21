@@ -4,13 +4,12 @@ import { ReportView } from "@/components/report/report-view";
 import {
   getAnalysisRequest,
   getCompletedAnalysisView,
-  markPaymentSucceeded,
   processAnalysisRequest
 } from "@/src/lib/repository/analysis-store";
 
 interface AnalysisPageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ payment?: string; checkout?: string }>;
+  searchParams: Promise<{ refresh?: string }>;
 }
 
 export default async function AnalysisPage({
@@ -25,12 +24,8 @@ export default async function AnalysisPage({
     notFound();
   }
 
-  if (
-    query.payment === "success" ||
-    (query.checkout === "demo" && existing.payment.status !== "succeeded")
-  ) {
-    markPaymentSucceeded(id);
-    processAnalysisRequest(id);
+  if (query.refresh === "1" && existing.status !== "completed") {
+    await processAnalysisRequest(id);
   }
 
   const view = getCompletedAnalysisView(id);
@@ -55,25 +50,17 @@ export default async function AnalysisPage({
         <ReportView analysis={view} />
       ) : (
         <section className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
-          <h1 className="text-3xl font-semibold">Payment step ready</h1>
+          <h1 className="text-3xl font-semibold">Analysis in progress</h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-            This request has been created. In the prototype, the checkout link can
-            redirect back here with `?payment=success` or the demo checkout fallback.
+            The uploaded PDFs are being processed. If the report is not visible yet,
+            refresh the page and the prototype will retry the extraction pipeline.
           </p>
           <div className="mt-6 flex flex-wrap gap-4">
-            {request.payment.checkoutUrl ? (
-              <a
-                href={request.payment.checkoutUrl}
-                className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white"
-              >
-                Open checkout
-              </a>
-            ) : null}
             <Link
-              href={`/analyses/${id}?payment=success`}
+              href={`/analyses/${id}?refresh=1`}
               className="rounded-full bg-coral px-6 py-3 text-sm font-semibold text-white"
             >
-              Simulate successful payment
+              Retry analysis
             </Link>
           </div>
         </section>

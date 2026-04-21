@@ -6,4 +6,6 @@ build/
 .env
 .env.*
 coverage/
+data/uploads/
 tsconfig.tsbuildinfo
+tsconfig.typecheck.tsbuildinfo

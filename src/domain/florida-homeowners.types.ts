@@ -80,6 +80,7 @@ export interface UploadedDocument {
     | "inspection"
     | "unknown";
   storageKey?: string;
+  extractedText?: string;
 }
 
 export interface PaymentRecord {

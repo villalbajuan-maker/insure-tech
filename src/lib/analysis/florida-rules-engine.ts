@@ -267,7 +267,7 @@ export function evaluateFloridaHomeownersGapAnalysis(
   }
 
   const summaryParts = [
-    `We reviewed ${input.intake.documentCount} uploaded document${input.intake.documentCount === 1 ? "" : "s"} for the Florida residential property at ${input.intake.propertyProfile.addressLine1}.`,
+    `We reviewed ${input.intake.documentCount} uploaded document${input.intake.documentCount === 1 ? "" : "s"} from the submitted policy package.`,
     findings.length === 0
       ? "No material Florida-focused coverage gaps were detected in this prototype review."
       : `The prototype identified ${findings.length} Florida-focused gap ${findings.length === 1 ? "finding" : "findings"} that should be reviewed with a licensed insurance professional.`
