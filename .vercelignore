@@ -1,0 +1,15 @@
+.git
+.github
+.next
+.next-stale-*/
+node_modules
+coverage
+dist
+build
+docs
+examples
+scripts
+data/uploads
+data/synthetic/florida-west-coast/generated
+*.log
+*.docx

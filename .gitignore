@@ -10,3 +10,4 @@ coverage/
 data/uploads/
 tsconfig.tsbuildinfo
 tsconfig.typecheck.tsbuildinfo
+.vercel
