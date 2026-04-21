@@ -154,6 +154,9 @@ export interface AnalysisRequest {
   intake: IntakeFormData;
   uploadedDocuments: UploadedDocument[];
   payment: PaymentRecord;
+  propertyDetails?: PropertyDetailsFormData;
+  comprehensivePaymentStatus?: "locked" | "unlocked";
+  comprehensiveUnlockedAt?: string;
   extractedPolicySnapshot?: FloridaPolicySnapshot;
   report?: AnalysisReport;
 }
@@ -164,35 +167,99 @@ export interface ReportSummaryCard {
   tone: "neutral" | "warning" | "danger" | "positive";
 }
 
-export interface SnapshotFindingView {
+export type RoofType = "shingle" | "tile" | "metal" | "flat" | "other";
+
+export interface PropertyDetailsFormData {
+  address: string;
+  propertyType: PropertyType;
+  occupancyType: OccupancyType;
+  yearBuilt?: number;
+  squareFootage?: number;
+  stories?: number;
+  estimatedHomeValue?: number;
+  estimatedReplacementValue?: number;
+  roofAge?: number;
+  roofType?: RoofType;
+  priorMajorClaim?: "yes" | "no";
+  knownFloodConcern?: "yes" | "no" | "not_sure";
+}
+
+export interface StarterFindingView {
   id: string;
   severity: GapFinding["severity"];
   title: string;
   description: string;
 }
 
-export interface SnapshotScenarioView {
+export interface StarterScenarioView {
   id: string;
   label: string;
   basis: string;
   estimatedImpact: MoneyAmount;
 }
 
-export interface SnapshotAnalysisView {
-  kind: "snapshot";
+export interface StarterAnalysisView {
+  kind: "starter";
   analysisId: string;
   status: AnalysisStatus;
+  waivedOfferLabel: string;
   totalExposureEstimate?: MoneyAmount;
-  highestImpactScenario: SnapshotScenarioView | null;
-  topFindings: SnapshotFindingView[];
-  derivedAddress: string | null;
+  primaryScenario: StarterScenarioView | null;
+  topFindings: StarterFindingView[];
+  meaningSummary: string;
   incompleteNotice: string;
+  prefilledAddress: string | null;
+  nextStepLabel: string;
 }
 
-export interface FullAnalysisView {
-  kind: "full";
+export interface PropertyGateView {
+  kind: "property_gate";
+  analysisId: string;
+  starterExposure?: MoneyAmount;
+  starterPrimaryScenario: StarterScenarioView | null;
+  prefilledAddress: string | null;
+  propertyDetails: Partial<PropertyDetailsFormData> | null;
+  unlockValueBullets: string[];
+  price: number;
+  ctaLabel: string;
+}
+
+export interface ComprehensiveSynthesis {
+  executiveRiskSummary: string;
+  propertyRiskDrivers: string[];
+  immediateActions: string[];
+  plannedActions: string[];
+  inspectionBridge: string;
+  actionSummary: string;
+  verificationItems: string[];
+  policySideActions: string[];
+  propertySideActions: string[];
+  postInspectionPath: string[];
+}
+
+export interface ComprehensiveAnalysisView {
+  kind: "comprehensive";
   request: AnalysisRequest;
   summaryCards: ReportSummaryCard[];
+  displayExposure?: MoneyAmount;
+  synthesis: ComprehensiveSynthesis;
 }
 
-export type CompletedAnalysisView = FullAnalysisView;
+export interface ExecutionInspectionOffer {
+  headline: string;
+  body: string;
+  includedItems: string[];
+  priceRangeLabel: string;
+  ctaLabel: string;
+}
+
+export interface ExecutionAnalysisView {
+  kind: "execution";
+  analysisId: string;
+  actionSummary: string;
+  verificationItems: string[];
+  policySideActions: string[];
+  propertySideActions: string[];
+  inspectionOffer: ExecutionInspectionOffer;
+  postInspectionPath: string[];
+}

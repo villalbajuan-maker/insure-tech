@@ -1,6 +1,6 @@
 import type {
-  FullAnalysisView,
-  SnapshotAnalysisView
+  ComprehensiveAnalysisView,
+  StarterAnalysisView
 } from "@/src/domain/florida-homeowners.types";
 import type {
   GapFinding,
@@ -8,11 +8,8 @@ import type {
 } from "@/src/domain/policy-gap-analysis.types";
 
 export interface AnalysisSessionState {
-  address: string | null;
-  addressSource: "pdf" | "user" | null;
-  refinementApplied: boolean;
+  propertyGateStarted: boolean;
   baseExposure: number;
-  refinedExposure: number | null;
 }
 
 const severityRank: Record<GapFinding["severity"], number> = {
@@ -52,20 +49,24 @@ export function computeLocationFactor(address: string): number {
 }
 
 export function getBaseExposure(
-  analysis: SnapshotAnalysisView | FullAnalysisView
+  analysis: StarterAnalysisView | ComprehensiveAnalysisView
 ): number {
-  if (analysis.kind === "snapshot") {
+  if (analysis.kind === "starter") {
     return analysis.totalExposureEstimate?.amount ?? 0;
   }
 
-  return analysis.request.report?.totalExposureEstimate?.amount ?? 0;
+  return (
+    analysis.displayExposure?.amount ??
+    analysis.request.report?.totalExposureEstimate?.amount ??
+    0
+  );
 }
 
 export function getHighestImpactScenario(
-  analysis: SnapshotAnalysisView | FullAnalysisView
+  analysis: StarterAnalysisView | ComprehensiveAnalysisView
 ): ScenarioExposureEstimate | null {
-  if (analysis.kind === "snapshot") {
-    const scenario = analysis.highestImpactScenario;
+  if (analysis.kind === "starter") {
+    const scenario = analysis.primaryScenario;
     if (!scenario) {
       return null;
     }
@@ -88,7 +89,7 @@ export function getHighestImpactScenario(
 }
 
 export function getTopScenarios(
-  analysis: FullAnalysisView,
+  analysis: ComprehensiveAnalysisView,
   limit: number
 ): ScenarioExposureEstimate[] {
   return [...(analysis.request.report?.scenarioExposures ?? [])]
@@ -97,11 +98,11 @@ export function getTopScenarios(
 }
 
 export function getTopFindings(
-  analysis: SnapshotAnalysisView | FullAnalysisView,
+  analysis: StarterAnalysisView | ComprehensiveAnalysisView,
   limit: number
 ): GapFinding[] {
-  if (analysis.kind === "snapshot") {
-    return analysis.topFindings.map((finding) => ({
+  if (analysis.kind === "starter") {
+    return analysis.topFindings.slice(0, limit).map((finding) => ({
       id: finding.id,
       findingType: "wording_ambiguity",
       severity: finding.severity,

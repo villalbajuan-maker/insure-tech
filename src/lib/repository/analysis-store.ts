@@ -3,17 +3,22 @@ import os from "node:os";
 import path from "node:path";
 import type {
   AnalysisRequest,
-  FullAnalysisView,
   IntakeFormData,
-  SnapshotAnalysisView,
+  ComprehensiveAnalysisView,
+  ExecutionAnalysisView,
+  PropertyDetailsFormData,
+  PropertyGateView,
+  StarterAnalysisView,
   UploadedDocument
 } from "@/src/domain/florida-homeowners.types";
 import {
   evaluateFloridaHomeownersGapAnalysis
 } from "@/src/lib/analysis/florida-rules-engine";
 import {
-  buildFullView,
-  buildSnapshotView
+  buildComprehensiveView,
+  buildExecutionView,
+  buildPropertyGateView,
+  buildStarterView
 } from "@/src/lib/analysis/analysis-view-builders";
 import { normalizeFloridaPolicySnapshot } from "@/src/lib/analysis/pdf-policy-normalizer";
 import { extractPdfText } from "@/src/lib/extraction/pdf-text-extractor";
@@ -92,7 +97,8 @@ export async function createAnalysisRequest(params: {
       amount: 0,
       currency: "USD",
       status: "not_required"
-    }
+    },
+    comprehensivePaymentStatus: "locked"
   };
 
   analysisStore.set(id, request);
@@ -169,16 +175,64 @@ export async function processAnalysisRequest(id: string): Promise<AnalysisReques
   return request;
 }
 
-export function getSnapshotAnalysisView(id: string): SnapshotAnalysisView | null {
+export function savePropertyDetails(
+  id: string,
+  propertyDetails: PropertyDetailsFormData
+): AnalysisRequest | null {
   const request = analysisStore.get(id);
-  if (!request) return null;
+  if (!request) {
+    return null;
+  }
 
-  return buildSnapshotView(request);
+  request.propertyDetails = propertyDetails;
+  request.updatedAt = now();
+  analysisStore.set(id, request);
+  return request;
 }
 
-export function getFullAnalysisView(id: string): FullAnalysisView | null {
+export function unlockComprehensiveAnalysis(id: string): AnalysisRequest | null {
+  const request = analysisStore.get(id);
+  if (!request) {
+    return null;
+  }
+
+  request.comprehensivePaymentStatus = "unlocked";
+  request.comprehensiveUnlockedAt = now();
+  request.updatedAt = now();
+  analysisStore.set(id, request);
+  return request;
+}
+
+export function getStarterAnalysisView(id: string): StarterAnalysisView | null {
   const request = analysisStore.get(id);
   if (!request) return null;
 
-  return buildFullView(request);
+  return buildStarterView(request);
+}
+
+export function getPropertyGateAnalysisView(id: string): PropertyGateView | null {
+  const request = analysisStore.get(id);
+  if (!request) return null;
+
+  return buildPropertyGateView(request);
+}
+
+export function getComprehensiveAnalysisView(
+  id: string
+): ComprehensiveAnalysisView | null {
+  const request = analysisStore.get(id);
+  if (!request || request.comprehensivePaymentStatus !== "unlocked") {
+    return null;
+  }
+
+  return buildComprehensiveView(request);
+}
+
+export function getExecutionAnalysisView(id: string): ExecutionAnalysisView | null {
+  const request = analysisStore.get(id);
+  if (!request || request.comprehensivePaymentStatus !== "unlocked") {
+    return null;
+  }
+
+  return buildExecutionView(request);
 }

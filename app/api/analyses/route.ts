@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 import type {
-  FullAnalysisView,
   IntakeFormData
 } from "@/src/domain/florida-homeowners.types";
 import {
   createAnalysisRequest,
-  getFullAnalysisView,
   processAnalysisRequest
 } from "@/src/lib/repository/analysis-store";
 
@@ -54,17 +52,8 @@ export async function POST(request: Request) {
   });
 
   await processAnalysisRequest(analysis.id);
-  const view = getFullAnalysisView(analysis.id) as FullAnalysisView | null;
-
-  if (!view) {
-    return NextResponse.json(
-      { error: "The analysis could not be completed for the uploaded PDFs." },
-      { status: 500 }
-    );
-  }
 
   return NextResponse.json({
-    analysisId: analysis.id,
-    analysis: view
+    analysisId: analysis.id
   });
 }

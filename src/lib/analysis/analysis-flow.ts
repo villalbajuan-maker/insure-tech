@@ -1,15 +1,13 @@
 export type AnalysisFlowState =
-  | "snapshot"
-  | "refine_input"
-  | "refine_result"
-  | "full"
+  | "starter"
+  | "property_gate"
+  | "comprehensive"
   | "execution";
 
 const stateOrder: AnalysisFlowState[] = [
-  "snapshot",
-  "refine_input",
-  "refine_result",
-  "full",
+  "starter",
+  "property_gate",
+  "comprehensive",
   "execution"
 ];
 
@@ -18,16 +16,11 @@ function getStateIndex(state: AnalysisFlowState): number {
 }
 
 export function parseRequestedState(value?: string): AnalysisFlowState {
-  if (
-    value === "refine_input" ||
-    value === "refine_result" ||
-    value === "full" ||
-    value === "execution"
-  ) {
+  if (value === "property_gate" || value === "comprehensive" || value === "execution") {
     return value;
   }
 
-  return "snapshot";
+  return "starter";
 }
 
 export function getFlowCookieName(analysisId: string): string {
@@ -37,35 +30,51 @@ export function getFlowCookieName(analysisId: string): string {
 export function resolveState(params: {
   requestedState?: string;
   storedState?: string | null;
+  hasPropertyDetails?: boolean;
+  comprehensiveUnlocked?: boolean;
 }): AnalysisFlowState {
   const requestedState = parseRequestedState(params.requestedState);
 
-  if (requestedState === "snapshot") {
-    return "snapshot";
+  if (requestedState === "starter") {
+    return "starter";
   }
 
   const storedState = params.storedState
     ? parseRequestedState(params.storedState)
-    : "snapshot";
+    : "starter";
 
-  if (getStateIndex(storedState) >= getStateIndex(requestedState)) {
-    return requestedState;
+  if (requestedState === "property_gate") {
+    return storedState === "starter" ? "starter" : "property_gate";
   }
 
-  return "snapshot";
+  if (requestedState === "comprehensive") {
+    if (params.hasPropertyDetails && params.comprehensiveUnlocked && getStateIndex(storedState) >= getStateIndex("comprehensive")) {
+      return "comprehensive";
+    }
+
+    return "starter";
+  }
+
+  if (requestedState === "execution") {
+    if (params.hasPropertyDetails && params.comprehensiveUnlocked && storedState === "execution") {
+      return "execution";
+    }
+
+    return "starter";
+  }
+
+  return "starter";
 }
 
 export function getNextFlowState(
   currentState: AnalysisFlowState
 ): AnalysisFlowState | null {
   switch (currentState) {
-    case "snapshot":
-      return "refine_input";
-    case "refine_input":
-      return "refine_result";
-    case "refine_result":
-      return "full";
-    case "full":
+    case "starter":
+      return "property_gate";
+    case "property_gate":
+      return "comprehensive";
+    case "comprehensive":
       return "execution";
     default:
       return null;

@@ -1,20 +1,17 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
-import { ReportView } from "@/components/report/report-view";
-import type { FullAnalysisView } from "@/src/domain/florida-homeowners.types";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 interface CreateAnalysisResponse {
   analysisId: string;
-  analysis: FullAnalysisView;
 }
 
 export function UploadForm() {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [analysis, setAnalysis] = useState<FullAnalysisView | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isPending, startTransition] = useTransition();
-  const reportRef = useRef<HTMLDivElement | null>(null);
 
   const totalSizeLabel = selectedFiles.length
     ? `${selectedFiles.length} file${selectedFiles.length === 1 ? "" : "s"} selected · ${(selectedFiles.reduce((sum, file) => sum + file.size, 0) / (1024 * 1024)).toFixed(2)} MB`
@@ -22,7 +19,6 @@ export function UploadForm() {
 
   async function handleSubmit(formData: FormData) {
     setError(null);
-    setAnalysis(null);
     startTransition(async () => {
       const response = await fetch("/api/analyses", {
         method: "POST",
@@ -41,10 +37,7 @@ export function UploadForm() {
       }
 
       const data = (await response.json()) as CreateAnalysisResponse;
-      setAnalysis(data.analysis);
-      setTimeout(() => {
-        reportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 50);
+      router.push(`/analysis/${data.analysisId}?state=starter`);
     });
   }
 
@@ -109,39 +102,11 @@ export function UploadForm() {
               >
                 {isPending ? "Generating report..." : "View my report now"}
               </button>
-              <p className="text-sm text-slate-500">
-                Prototype mode: no checkout yet.
-              </p>
+              <p className="text-sm text-slate-500">Starter preview is currently waived.</p>
             </div>
           </form>
         </div>
       </section>
-
-      {analysis ? (
-        <div ref={reportRef} className="space-y-4">
-          <div className="print-hide flex items-center justify-between rounded-[2rem] border border-white/70 bg-white/90 px-6 py-4 shadow-card">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                Analysis complete
-              </p>
-              <p className="mt-1 text-sm text-slate-600">
-                Review the extracted findings below. Upload a new package any time to replace this result.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setAnalysis(null);
-                setError(null);
-              }}
-              className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-            >
-              Clear result
-            </button>
-          </div>
-          <ReportView analysis={analysis} />
-        </div>
-      ) : null}
     </div>
   );
 }

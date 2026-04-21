@@ -8,9 +8,11 @@ import {
   resolveState
 } from "@/src/lib/analysis/analysis-flow";
 import {
-  getFullAnalysisView,
   getAnalysisRequest,
-  getSnapshotAnalysisView,
+  getComprehensiveAnalysisView,
+  getExecutionAnalysisView,
+  getPropertyGateAnalysisView,
+  getStarterAnalysisView,
   processAnalysisRequest
 } from "@/src/lib/repository/analysis-store";
 
@@ -41,13 +43,23 @@ export default async function AnalysisPage({
   const cookieStore = await cookies();
   const resolvedState: AnalysisFlowState = resolveState({
     requestedState: query.state,
-    storedState: cookieStore.get(getFlowCookieName(id))?.value ?? null
+    storedState: cookieStore.get(getFlowCookieName(id))?.value ?? null,
+    hasPropertyDetails: Boolean(existing.propertyDetails),
+    comprehensiveUnlocked: existing.comprehensivePaymentStatus === "unlocked"
   });
 
-  const view =
-    resolvedState === "full" || resolvedState === "execution"
-      ? getFullAnalysisView(id)
-      : getSnapshotAnalysisView(id);
+  const view = (() => {
+    switch (resolvedState) {
+      case "property_gate":
+        return getPropertyGateAnalysisView(id);
+      case "comprehensive":
+        return getComprehensiveAnalysisView(id);
+      case "execution":
+        return getExecutionAnalysisView(id);
+      default:
+        return getStarterAnalysisView(id);
+    }
+  })();
   const request = getAnalysisRequest(id);
 
   if (!request) {

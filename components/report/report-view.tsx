@@ -1,9 +1,9 @@
-import type { CompletedAnalysisView } from "@/src/domain/florida-homeowners.types";
+import type { ComprehensiveAnalysisView } from "@/src/domain/florida-homeowners.types";
 import type { MoneyAmount } from "@/src/domain/policy-gap-analysis.types";
 import { titleCase } from "@/src/lib/utils";
 import { ExportReportButton } from "@/components/report/export-report-button";
 
-function toneStyles(tone: CompletedAnalysisView["summaryCards"][number]["tone"]) {
+function toneStyles(tone: ComprehensiveAnalysisView["summaryCards"][number]["tone"]) {
   switch (tone) {
     case "positive":
       return "bg-emerald-50 text-emerald-700";
@@ -29,7 +29,7 @@ export function ReportView({
   exposureOverride,
   banner
 }: {
-  analysis: CompletedAnalysisView;
+  analysis: ComprehensiveAnalysisView;
   exposureOverride?: MoneyAmount;
   banner?: string;
 }) {
