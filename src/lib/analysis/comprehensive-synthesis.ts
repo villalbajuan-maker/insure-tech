@@ -1,9 +1,25 @@
+import { z } from "zod";
 import type {
   AnalysisRequest,
   ComprehensiveSynthesis,
   PropertyDetailsFormData
 } from "@/src/domain/florida-homeowners.types";
 import { computeLocationFactor } from "@/src/lib/analysis/analysis-experience";
+import { getOpenAIClient } from "@/src/lib/openai/client";
+import { floridaSynthesisSystemPrompt } from "@/src/lib/openai/prompts";
+
+const synthesisSchema = z.object({
+  executiveRiskSummary: z.string(),
+  propertyRiskDrivers: z.array(z.string()).min(1).max(5),
+  immediateActions: z.array(z.string()).min(1).max(5),
+  plannedActions: z.array(z.string()).min(1).max(5),
+  inspectionBridge: z.string(),
+  actionSummary: z.string(),
+  verificationItems: z.array(z.string()).min(1).max(6),
+  policySideActions: z.array(z.string()).min(1).max(5),
+  propertySideActions: z.array(z.string()).min(1).max(5),
+  postInspectionPath: z.array(z.string()).min(1).max(6)
+});
 
 function buildPropertyRiskDrivers(
   propertyDetails: PropertyDetailsFormData | undefined
@@ -55,7 +71,7 @@ function buildPropertyRiskDrivers(
   return drivers.slice(0, 4);
 }
 
-export function buildComprehensiveSynthesis(
+export function buildFallbackComprehensiveSynthesis(
   request: AnalysisRequest
 ): ComprehensiveSynthesis {
   const report = request.report;
@@ -73,27 +89,24 @@ export function buildComprehensiveSynthesis(
     ? `Your analysis suggests that the property may face meaningful financial exposure under one or more major loss scenarios. The strongest current drivers appear to be ${topFindingTitles.join(", ")}, with the most visible exposure pressure concentrated around ${topScenarioLabels[0] ?? "the leading scenario"}.`
     : "Your uploaded documents did not trigger major Florida-specific gaps in this run, but the property should still be reviewed for coverage alignment and practical storm-readiness.";
 
-  const immediateActions = [
-    "Validate the current roof and exterior condition with updated documentation.",
-    "Review the largest uncovered scenario against the current policy package.",
-    "Confirm whether the present replacement assumptions still reflect the property accurately."
-  ];
-
-  const plannedActions = [
-    "Schedule an on-site inspection to reduce uncertainty around current property conditions.",
-    "Review policy structure, deductibles, and optional endorsements after inspection findings are documented.",
-    "Evaluate preventive maintenance or storm-hardening work where visible vulnerabilities are identified."
-  ];
-
-  const inspectionBridge =
-    "Some of the largest remaining uncertainties in this analysis depend on real property conditions that cannot be confirmed from policy documents alone. An inspection is the clearest next step for validating current condition, documenting visible risks, and improving alignment between the property and the coverage strategy.";
-
   return {
+    source: "fallback",
+    model: null,
+    generatedAt: new Date().toISOString(),
     executiveRiskSummary,
     propertyRiskDrivers: buildPropertyRiskDrivers(propertyDetails),
-    immediateActions,
-    plannedActions,
-    inspectionBridge,
+    immediateActions: [
+      "Validate the current roof and exterior condition with updated documentation.",
+      "Review the largest uncovered scenario against the current policy package.",
+      "Confirm whether the present replacement assumptions still reflect the property accurately."
+    ],
+    plannedActions: [
+      "Schedule an on-site inspection to reduce uncertainty around current property conditions.",
+      "Review policy structure, deductibles, and optional endorsements after inspection findings are documented.",
+      "Evaluate preventive maintenance or storm-hardening work where visible vulnerabilities are identified."
+    ],
+    inspectionBridge:
+      "Some of the largest remaining uncertainties in this analysis depend on real property conditions that cannot be confirmed from policy documents alone. An inspection is the clearest next step for validating current condition, documenting visible risks, and improving alignment between the property and the coverage strategy.",
     actionSummary:
       "The next phase should focus on verifying current property condition, confirming coverage alignment, and prioritizing the few actions that can materially reduce practical loss exposure.",
     verificationItems: [
@@ -119,4 +132,111 @@ export function buildComprehensiveSynthesis(
       "Move into execution based on verified property facts"
     ]
   };
+}
+
+function buildSynthesisPrompt(request: AnalysisRequest): string {
+  const report = request.report;
+  const payload = {
+    propertyDetails: request.propertyDetails,
+    totalExposureEstimate: report?.totalExposureEstimate,
+    scenarioExposures: report?.scenarioExposures,
+    findings: report?.findings.map((finding) => ({
+      severity: finding.severity,
+      title: finding.title,
+      description: finding.description,
+      financialImpactEstimate: finding.financialImpactEstimate
+    })),
+    recommendations: report?.recommendations.map((item) => ({
+      priority: item.priority,
+      rationale: item.rationale,
+      expectedOutcome: item.expectedOutcome
+    }))
+  };
+
+  return [
+    "Use the structured analysis below to produce a conservative, action-oriented comprehensive synthesis.",
+    "Return JSON only with this shape:",
+    JSON.stringify(
+      {
+        executiveRiskSummary: "string",
+        propertyRiskDrivers: ["string"],
+        immediateActions: ["string"],
+        plannedActions: ["string"],
+        inspectionBridge: "string",
+        actionSummary: "string",
+        verificationItems: ["string"],
+        policySideActions: ["string"],
+        propertySideActions: ["string"],
+        postInspectionPath: ["string"]
+      },
+      null,
+      2
+    ),
+    "Analysis payload:",
+    JSON.stringify(payload, null, 2)
+  ].join("\n\n");
+}
+
+export async function generateComprehensiveSynthesis(
+  request: AnalysisRequest
+): Promise<ComprehensiveSynthesis> {
+  const client = getOpenAIClient();
+  const model = process.env.OPENAI_SYNTHESIS_MODEL ?? "gpt-4.1-mini";
+
+  if (!client) {
+    console.log("comprehensive_synthesis_fallback", {
+      reason: "missing_api_key",
+      analysisId: request.id
+    });
+    return buildFallbackComprehensiveSynthesis(request);
+  }
+
+  try {
+    console.log("comprehensive_synthesis_started", {
+      analysisId: request.id,
+      model
+    });
+
+    const completion = await client.chat.completions.create({
+      model,
+      temperature: 0.3,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: floridaSynthesisSystemPrompt
+        },
+        {
+          role: "user",
+          content: buildSynthesisPrompt(request)
+        }
+      ]
+    });
+
+    const raw = completion.choices[0]?.message?.content;
+    const parsed = synthesisSchema.parse(JSON.parse(raw ?? "{}"));
+
+    const synthesis: ComprehensiveSynthesis = {
+      ...parsed,
+      source: "llm",
+      model,
+      generatedAt: new Date().toISOString()
+    };
+
+    console.log("comprehensive_synthesis_completed", {
+      analysisId: request.id,
+      model,
+      source: synthesis.source
+    });
+
+    return synthesis;
+  } catch (error) {
+    console.log("comprehensive_synthesis_fallback", {
+      analysisId: request.id,
+      model,
+      reason: error instanceof Error ? error.message : "unknown_error"
+    });
+
+    return buildFallbackComprehensiveSynthesis(request);
+  }
 }

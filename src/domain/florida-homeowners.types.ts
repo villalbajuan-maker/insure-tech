@@ -157,6 +157,7 @@ export interface AnalysisRequest {
   propertyDetails?: PropertyDetailsFormData;
   comprehensivePaymentStatus?: "locked" | "unlocked";
   comprehensiveUnlockedAt?: string;
+  comprehensiveSynthesis?: ComprehensiveSynthesis;
   extractedPolicySnapshot?: FloridaPolicySnapshot;
   report?: AnalysisReport;
 }
@@ -225,6 +226,9 @@ export interface PropertyGateView {
 }
 
 export interface ComprehensiveSynthesis {
+  source: "llm" | "fallback";
+  model: string | null;
+  generatedAt: string;
   executiveRiskSummary: string;
   propertyRiskDrivers: string[];
   immediateActions: string[];

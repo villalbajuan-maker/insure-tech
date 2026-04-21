@@ -31,6 +31,10 @@ export function ComprehensiveStateView({
         <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
           Built from your policy documents and your property details.
         </p>
+        <div className="mt-4 inline-flex rounded-full bg-mist px-4 py-2 text-sm font-medium text-slate-700">
+          Synthesis source: {analysis.synthesis.source}
+          {analysis.synthesis.model ? ` · ${analysis.synthesis.model}` : ""}
+        </div>
       </section>
 
       <section className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">

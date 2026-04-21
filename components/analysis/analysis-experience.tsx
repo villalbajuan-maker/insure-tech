@@ -252,9 +252,27 @@ export function AnalysisExperience({
         comprehensivePaymentStatus: "unlocked",
         comprehensiveUnlockedAt: new Date().toISOString()
       };
+      const response = await fetch(`/api/analyses/${analysisId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          action: "unlock_comprehensive",
+          requestSnapshot: updatedRequest,
+          propertyDetails: updatedRequest.propertyDetails
+        })
+      });
 
-      setRequestState(updatedRequest);
-      saveCachedAnalysis(updatedRequest);
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json()) as { request?: AnalysisRequest | null };
+      const nextRequest = payload.request ?? updatedRequest;
+
+      setRequestState(nextRequest);
+      saveCachedAnalysis(nextRequest);
       persistReachedState("comprehensive");
       router.push(`${pathname}?state=comprehensive` as Route);
     });

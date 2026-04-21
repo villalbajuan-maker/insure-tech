@@ -1,7 +1,11 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import type { AnalysisRequest } from "@/src/domain/florida-homeowners.types";
 import { getFlowCookieName, resolveState } from "@/src/lib/analysis/analysis-flow";
+import { generateComprehensiveSynthesis } from "@/src/lib/analysis/comprehensive-synthesis";
+import { buildComprehensiveView } from "@/src/lib/analysis/analysis-view-builders";
 import {
+  enrichComprehensiveSynthesis,
   getComprehensiveAnalysisView,
   getExecutionAnalysisView,
   getAnalysisRequest,
@@ -11,7 +15,7 @@ import {
   processAnalysisRequest
   ,
   savePropertyDetails,
-  unlockComprehensiveAnalysis
+    unlockComprehensiveAnalysis
 } from "@/src/lib/repository/analysis-store";
 
 interface RouteContext {
@@ -58,6 +62,7 @@ export async function POST(request: Request, context: RouteContext) {
   const { id } = await context.params;
   const body = (await request.json().catch(() => ({}))) as {
     action?: "mark_paid" | "process" | "unlock_comprehensive";
+    requestSnapshot?: AnalysisRequest;
     propertyDetails?: {
       address?: string;
       propertyType?: "single_family" | "condo" | "townhome" | "multifamily_small" | "other";
@@ -101,7 +106,7 @@ export async function POST(request: Request, context: RouteContext) {
       );
     }
 
-    const saved = savePropertyDetails(id, {
+    const propertyDetails = {
       address: body.propertyDetails.address,
       propertyType: body.propertyDetails.propertyType,
       occupancyType: body.propertyDetails.occupancyType,
@@ -114,17 +119,36 @@ export async function POST(request: Request, context: RouteContext) {
       roofType: body.propertyDetails.roofType,
       priorMajorClaim: body.propertyDetails.priorMajorClaim,
       knownFloodConcern: body.propertyDetails.knownFloodConcern
-    });
+    };
 
-    if (!saved) {
+    const saved = savePropertyDetails(id, propertyDetails);
+
+    if (saved) {
+      unlockComprehensiveAnalysis(id);
+      await enrichComprehensiveSynthesis(id);
+
+      return NextResponse.json({
+        request: getAnalysisRequest(id),
+        comprehensiveView: getComprehensiveAnalysisView(id)
+      });
+    }
+
+    if (!body.requestSnapshot) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    unlockComprehensiveAnalysis(id);
+    const updatedRequest: AnalysisRequest = {
+      ...body.requestSnapshot,
+      propertyDetails,
+      comprehensivePaymentStatus: "unlocked",
+      comprehensiveUnlockedAt: new Date().toISOString()
+    };
+    updatedRequest.comprehensiveSynthesis =
+      await generateComprehensiveSynthesis(updatedRequest);
 
     return NextResponse.json({
-      request: getAnalysisRequest(id),
-      comprehensiveView: getComprehensiveAnalysisView(id)
+      request: updatedRequest,
+      comprehensiveView: buildComprehensiveView(updatedRequest)
     });
   }
 

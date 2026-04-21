@@ -18,7 +18,7 @@ import {
   computeLocationFactor,
   extractAddressFromText
 } from "@/src/lib/analysis/analysis-experience";
-import { buildComprehensiveSynthesis } from "@/src/lib/analysis/comprehensive-synthesis";
+import { buildFallbackComprehensiveSynthesis } from "@/src/lib/analysis/comprehensive-synthesis";
 
 const severityRank: Record<GapFinding["severity"], number> = {
   critical: 4,
@@ -159,7 +159,7 @@ export function buildComprehensiveView(
     request,
     summaryCards,
     displayExposure: computeDisplayExposure(request),
-    synthesis: buildComprehensiveSynthesis(request)
+    synthesis: request.comprehensiveSynthesis ?? buildFallbackComprehensiveSynthesis(request)
   };
 }
 

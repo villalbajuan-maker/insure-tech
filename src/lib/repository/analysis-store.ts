@@ -20,6 +20,7 @@ import {
   buildPropertyGateView,
   buildStarterView
 } from "@/src/lib/analysis/analysis-view-builders";
+import { generateComprehensiveSynthesis } from "@/src/lib/analysis/comprehensive-synthesis";
 import { normalizeFloridaPolicySnapshot } from "@/src/lib/analysis/pdf-policy-normalizer";
 import { extractPdfText } from "@/src/lib/extraction/pdf-text-extractor";
 import { slugify } from "@/src/lib/utils";
@@ -198,6 +199,18 @@ export function unlockComprehensiveAnalysis(id: string): AnalysisRequest | null 
 
   request.comprehensivePaymentStatus = "unlocked";
   request.comprehensiveUnlockedAt = now();
+  request.updatedAt = now();
+  analysisStore.set(id, request);
+  return request;
+}
+
+export async function enrichComprehensiveSynthesis(id: string): Promise<AnalysisRequest | null> {
+  const request = analysisStore.get(id);
+  if (!request) {
+    return null;
+  }
+
+  request.comprehensiveSynthesis = await generateComprehensiveSynthesis(request);
   request.updatedAt = now();
   analysisStore.set(id, request);
   return request;
