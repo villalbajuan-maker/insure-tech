@@ -50,37 +50,26 @@ export function UploadForm() {
 
   return (
     <div className="space-y-8">
-      <section
-        id="upload-audit"
-        className="print-hide grid gap-6 scroll-mt-8 lg:grid-cols-[1.2fr_0.8fr]"
-      >
-        <form
-          action={handleSubmit}
-          className="rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card"
-        >
-          <div className="mb-8">
-            <div className="inline-flex rounded-full bg-coral/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-coral">
-              Upload policy for audit
-            </div>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight">
-              Start the storm protection policy review
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-              Upload the declarations page, policy packet, and any endorsements you
-              have. The prototype will analyze the uploaded PDFs and return a report
-              centered on uncovered risk, underinsured exposure, and recommended action
-              steps.
+      <section id="final-cta" className="print-hide scroll-mt-8 rounded-[2rem] border border-white/70 bg-[#102033] p-8 text-white shadow-card">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <div>
+            <p className="text-xs uppercase tracking-[0.18em] text-coral">
+              Final step
             </p>
-            <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-600">
-              <span className="rounded-full bg-mist px-3 py-1">Low-friction first step</span>
-              <span className="rounded-full bg-mist px-3 py-1">Designed for Florida homes</span>
-              <span className="rounded-full bg-mist px-3 py-1">Built to support inspection follow-up</span>
-            </div>
+            <h2 className="mt-3 text-4xl font-semibold tracking-tight">
+              Descubre tu exposición antes de que lo haga una tormenta.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-slate-200">
+              Ver mi reporte ahora
+            </p>
           </div>
 
-          <div className="rounded-[1.75rem] border border-dashed border-slate-300 bg-mist/70 p-6">
+          <form
+            action={handleSubmit}
+            className="rounded-[2rem] bg-white/95 p-8 text-ink shadow-card"
+          >
             <label className="flex flex-col gap-3 text-sm font-medium text-slate-800">
-              Policy PDFs
+              Upload policy PDFs
               <input
                 required
                 type="file"
@@ -95,76 +84,37 @@ export function UploadForm() {
             </label>
 
             <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-              <span className="rounded-full bg-white px-3 py-1">
+              <span className="rounded-full bg-mist px-3 py-1">
                 Recommended: declarations + policy packet
               </span>
-              <span className="rounded-full bg-white px-3 py-1">
-                Accepted: PDF only
+              <span className="rounded-full bg-mist px-3 py-1">
+                PDF only
               </span>
               {totalSizeLabel ? (
-                <span className="rounded-full bg-white px-3 py-1">{totalSizeLabel}</span>
+                <span className="rounded-full bg-mist px-3 py-1">{totalSizeLabel}</span>
               ) : null}
             </div>
-          </div>
 
-          {error ? (
-            <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
-              {error}
-            </p>
-          ) : null}
+            {error ? (
+              <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </p>
+            ) : null}
 
-          <div className="mt-6 flex flex-wrap items-center gap-4">
-            <button
-              type="submit"
-              disabled={isPending}
-              className="inline-flex rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isPending ? "Analyzing uploaded PDFs..." : "Run policy audit"}
-            </button>
-            <p className="text-sm text-slate-500">
-              Prototype mode: no checkout or account creation in this version.
-            </p>
-          </div>
-        </form>
-
-        <aside className="rounded-[2rem] border border-white/70 bg-[#102033] p-8 text-white shadow-card">
-          <h3 className="text-xl font-semibold">Why homeowners say yes to this offer</h3>
-          <div className="mt-5 space-y-4 text-sm leading-7 text-slate-200">
-            <div className="rounded-3xl bg-white/10 p-5">
-              <div className="text-xs uppercase tracking-[0.18em] text-coral">
-                Hidden gaps
-              </div>
-              <p className="mt-2">
-                Missing flood, wind, or endorsement support that leaves the homeowner exposed.
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <button
+                type="submit"
+                disabled={isPending}
+                className="inline-flex rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isPending ? "Generating report..." : "Ver mi reporte ahora"}
+              </button>
+              <p className="text-sm text-slate-500">
+                Prototype mode: no checkout yet.
               </p>
             </div>
-            <div className="rounded-3xl bg-white/10 p-5">
-              <div className="text-xs uppercase tracking-[0.18em] text-coral">
-                Claim pain
-              </div>
-              <p className="mt-2">
-                Wording or deductible structures that can still produce painful out-of-pocket loss after a claim.
-              </p>
-            </div>
-            <div className="rounded-3xl bg-white/10 p-5">
-              <div className="text-xs uppercase tracking-[0.18em] text-coral">
-                Action steps
-              </div>
-              <p className="mt-2">
-                Recommendations that can naturally lead into a follow-up inspection conversation.
-              </p>
-            </div>
-          </div>
-          <div className="mt-6 rounded-3xl bg-coral/10 p-5">
-            <div className="text-xs uppercase tracking-[0.18em] text-coral">
-              James-style positioning
-            </div>
-            <p className="mt-3 text-sm leading-7 text-slate-100">
-              This is not sold as a policy-reading exercise. It is sold as a way to
-              uncover what could go wrong before the next storm and before the next claim.
-            </p>
-          </div>
-        </aside>
+          </form>
+        </div>
       </section>
 
       {analysis ? (

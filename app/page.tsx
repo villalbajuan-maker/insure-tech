@@ -6,157 +6,154 @@ export default function HomePage() {
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-8 md:px-8 md:py-10">
       <Hero />
 
-      <section className="print-hide grid gap-6 lg:grid-cols-4">
-        <article className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Risk</p>
-          <h2 className="mt-3 text-xl font-semibold">What is not covered?</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            Surface flood, wind, ordinance-or-law, and sinkhole gaps before they become expensive surprises.
-          </p>
-        </article>
-        <article className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Claims</p>
-          <h2 className="mt-3 text-xl font-semibold">Where could a claim stall?</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            Highlight wording ambiguity and deductible pressure that can still hurt even when coverage exists.
-          </p>
-        </article>
-        <article className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Action</p>
-          <h2 className="mt-3 text-xl font-semibold">What should happen next?</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            Give the homeowner concrete next steps instead of an abstract technical summary.
-          </p>
-        </article>
-        <article className="rounded-[2rem] border border-white/70 bg-[#102033] p-6 text-white shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-coral">Conversion</p>
-          <h2 className="mt-3 text-xl font-semibold">Audit first. Inspection second.</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-200">
-            The report opens the relationship. The inspection deepens it.
-          </p>
-        </article>
+      <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
+        <p className="text-xs uppercase tracking-[0.18em] text-coral">
+          Realidad incómoda
+        </p>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">
+            La mayoría de propietarios está subasegurado
+          </div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">
+            Muchas reclamaciones se niegan por “daños preexistentes”
+          </div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">
+            El techo es la causa #1 de disputas
+          </div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">
+            El seguro NO siempre cubre inundaciones o viento
+          </div>
+        </div>
+        <p className="mt-6 text-lg font-semibold text-ink">
+          El problema no es la tormenta. Es descubrir demasiado tarde que no estás cubierto.
+        </p>
+      </section>
+
+      <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
+        <p className="text-xs uppercase tracking-[0.18em] text-coral">
+          Preview del reporte
+        </p>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink">
+          Esto es lo que vas a ver sobre tu propiedad
+        </h2>
+        <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr_1fr]">
+          <article className="rounded-[2rem] bg-[#102033] p-6 text-white">
+            <div className="text-xs uppercase tracking-[0.18em] text-slate-300">
+              Risk score
+            </div>
+            <div className="mx-auto mt-6 flex h-40 w-40 items-center justify-center rounded-full border-[14px] border-coral bg-white/5 text-center">
+              <div>
+                <div className="text-4xl font-semibold">72</div>
+                <div className="text-sm text-slate-300">/ 100</div>
+              </div>
+            </div>
+            <div className="mt-5 text-center text-sm text-slate-200">
+              Riesgo actual: 72/100
+            </div>
+          </article>
+
+          <article className="rounded-[2rem] border border-slate-200 bg-white p-6">
+            <div className="text-xs uppercase tracking-[0.18em] text-slate-500">
+              Gap table
+            </div>
+            <div className="mt-5 space-y-3">
+              <div className="flex items-center justify-between rounded-2xl bg-red-50 px-4 py-3">
+                <span className="text-sm font-medium text-slate-700">Flood</span>
+                <span className="text-sm font-semibold text-red-700">Gap</span>
+              </div>
+              <div className="flex items-center justify-between rounded-2xl bg-amber-50 px-4 py-3">
+                <span className="text-sm font-medium text-slate-700">Roof / deductible</span>
+                <span className="text-sm font-semibold text-amber-700">Watch</span>
+              </div>
+              <div className="flex items-center justify-between rounded-2xl bg-emerald-50 px-4 py-3">
+                <span className="text-sm font-medium text-slate-700">Liability</span>
+                <span className="text-sm font-semibold text-emerald-700">OK</span>
+              </div>
+            </div>
+            <div className="mt-5 text-lg font-semibold text-ink">
+              $65,000 en cobertura insuficiente
+            </div>
+          </article>
+
+          <article className="rounded-[2rem] bg-sand p-6">
+            <div className="text-xs uppercase tracking-[0.18em] text-slate-500">
+              Financial exposure
+            </div>
+            <div className="mt-8 text-5xl font-semibold tracking-tight text-ink">
+              $84,000
+            </div>
+            <p className="mt-4 text-sm leading-7 text-slate-700">
+              Podrías perder $84,000 en un solo evento
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
+        <p className="text-xs uppercase tracking-[0.18em] text-coral">
+          Propuesta clara
+        </p>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink">
+          En menos de 5 minutos sabrás si tu propiedad está financieramente expuesta.
+        </h2>
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Análisis de tu póliza</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Evaluación de riesgo de tormenta</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Identificación de vacíos críticos</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">✔ Estimación de pérdida potencial</div>
+        </div>
+      </section>
+
+      <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
+        <p className="text-xs uppercase tracking-[0.18em] text-coral">
+          Cómo funciona
+        </p>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <div className="rounded-3xl bg-[#102033] p-6 text-white">
+            <div className="text-xs uppercase tracking-[0.18em] text-slate-300">1</div>
+            <div className="mt-3 text-2xl font-semibold">Ingresa tu dirección</div>
+          </div>
+          <div className="rounded-3xl bg-[#102033] p-6 text-white">
+            <div className="text-xs uppercase tracking-[0.18em] text-slate-300">2</div>
+            <div className="mt-3 text-2xl font-semibold">Sube tu póliza (opcional)</div>
+          </div>
+          <div className="rounded-3xl bg-[#102033] p-6 text-white">
+            <div className="text-xs uppercase tracking-[0.18em] text-slate-300">3</div>
+            <div className="mt-3 text-2xl font-semibold">Recibe tu reporte</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="print-hide rounded-[2rem] border border-white/70 bg-[#102033] p-8 text-white shadow-card">
+        <p className="text-xs uppercase tracking-[0.18em] text-coral">
+          Precio + decisión
+        </p>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight">
+          Empieza por $49 — y decide con información real, no suposiciones.
+        </h2>
+        <div className="mt-6 flex flex-wrap gap-4">
+          <div className="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-100">
+            Menos que una inspección
+          </div>
+          <div className="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-100">
+            Mucho menos que un error de cobertura
+          </div>
+        </div>
+      </section>
+
+      <section className="print-hide rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-card">
+        <p className="text-xs uppercase tracking-[0.18em] text-coral">
+          Reducción de fricción
+        </p>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">Sin suscripción</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">Sin llamadas obligatorias</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">Información privada</div>
+          <div className="rounded-3xl bg-mist p-5 text-sm leading-7 text-slate-700">Pago único</div>
+        </div>
       </section>
 
       <UploadForm />
-
-      <section
-        id="how-it-works"
-        className="print-hide grid gap-6 scroll-mt-8 lg:grid-cols-[1.1fr_0.9fr]"
-      >
-        <article className="rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">How it works</p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-            A James-style landing page needs a simple path from concern to action.
-          </h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            <div className="rounded-3xl bg-mist p-5">
-              <div className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                Step 1
-              </div>
-              <div className="mt-2 text-xl font-semibold">Upload the policy</div>
-              <p className="mt-3 text-sm leading-7 text-slate-600">
-                Make the upload field the highest-intent action on the page.
-              </p>
-            </div>
-            <div className="rounded-3xl bg-sand p-5">
-              <div className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                Step 2
-              </div>
-              <div className="mt-2 text-xl font-semibold">Get the audit</div>
-              <p className="mt-3 text-sm leading-7 text-slate-600">
-                Return a report around uncovered risk, underinsured exposure, and next steps.
-              </p>
-            </div>
-            <div className="rounded-3xl bg-mist p-5">
-              <div className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                Step 3
-              </div>
-              <div className="mt-2 text-xl font-semibold">Book inspection</div>
-              <p className="mt-3 text-sm leading-7 text-slate-600">
-                Use the audit as the bridge into a higher-trust storm protection conversation.
-              </p>
-            </div>
-          </div>
-        </article>
-
-        <article className="rounded-[2rem] border border-white/70 bg-[#102033] p-8 text-white shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-coral">Offer stack</p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-            The page now supports the sales story and the live prototype.
-          </h2>
-          <ul className="mt-6 space-y-3 text-sm leading-7 text-slate-200">
-            <li>$49 audit framing is visible above the fold</li>
-            <li>Outcome-based messaging leads the story</li>
-            <li>Real PDF upload is still active and usable</li>
-            <li>The report can still be exported as a PDF</li>
-          </ul>
-          <p className="mt-6 text-sm leading-7 text-slate-300">
-            This lets us test real buyer-facing messaging now, while still keeping the
-            actual analysis engine on the page for demos and expert review sessions.
-          </p>
-        </article>
-      </section>
-
-      <section className="print-hide grid gap-6 lg:grid-cols-3">
-        <article className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Primary promise</p>
-          <h2 className="mt-3 text-xl font-semibold">Spot the gaps before the storm</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            The strongest James-style message is simple: identify what could fail before the next claim happens.
-          </p>
-        </article>
-        <article className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Offer framing</p>
-          <h2 className="mt-3 text-xl font-semibold">$49 audit, higher-trust follow-up</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            The report is the low-friction first step. The deeper inspection relationship comes after trust is earned.
-          </p>
-        </article>
-        <article className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Testing mode</p>
-          <h2 className="mt-3 text-xl font-semibold">Ready for live policy review sessions</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            You can use real policy files with your insurance expert now and refine the messaging from actual review calls.
-          </p>
-        </article>
-      </section>
-
-      <section className="print-hide grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        <article className="rounded-[2rem] border border-white/70 bg-white/85 p-8 shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Who this is for</p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-            Homeowners who want clarity before storm season, not after a denied claim.
-          </h2>
-          <ul className="mt-6 space-y-3 text-sm leading-7 text-slate-600">
-            <li>You are not sure whether your current policy leaves major storm exposure open.</li>
-            <li>You want a practical explanation of where a claim could break down.</li>
-            <li>You want next steps that support a stronger inspection or mitigation decision.</li>
-          </ul>
-        </article>
-
-        <article className="rounded-[2rem] border border-white/70 bg-[#102033] p-8 text-white shadow-card">
-          <p className="text-xs uppercase tracking-[0.18em] text-coral">Inspection handoff</p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-            The report should not be the end of the experience.
-          </h2>
-          <p className="mt-4 text-sm leading-7 text-slate-200">
-            James is right about the commercial sequence: the audit earns attention,
-            but the inspection is where trust deepens and the broader storm protection
-            relationship starts to become real.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a
-              href="#upload-audit"
-              className="inline-flex rounded-full bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-slate-100"
-            >
-              Upload policy now
-            </a>
-            <span className="inline-flex rounded-full border border-white/20 px-5 py-3 text-sm text-slate-200">
-              Next phase: inspection CTA and booking
-            </span>
-          </div>
-        </article>
-      </section>
     </main>
   );
 }
